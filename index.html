@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>暗房 / VISUAL DATABASE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <h1>暗房 <span class="brand-en">/ VISUAL DATABASE</span></h1>
+    <p class="brand-sub">视觉研究档案 · A VISUAL RESEARCH ARCHIVE</p>
+  </div>
+  <div class="header-meta">
+    <span class="entry-count" id="entryCount">— ENTRIES</span>
+    <button class="group-toggle" id="groupToggle" type="button">GROUPS [<span id="groupCount">0</span>]</button>
+  </div>
+</header>
+
+<nav class="toolbar">
+  <div class="cat-tabs" id="catTabs" role="tablist">
+    <button type="button" data-cat="ALL" class="active">ALL</button>
+    <button type="button" data-cat="A">ART</button>
+    <button type="button" data-cat="B">LITERATURE</button>
+    <button type="button" data-cat="C">SOCIAL</button>
+    <button type="button" data-cat="D">FORM</button>
+  </div>
+  <div class="search-box">
+    <input id="searchInput" type="search" autocomplete="off"
+           placeholder="Search — 词条 / 出处 / 标签 / 备注 / ID">
+  </div>
+</nav>
+
+<div class="tagbar-wrap">
+  <span class="tagbar-label">TAGS</span>
+  <div class="tagbar" id="tagbar"></div>
+</div>
+
+<div class="status-line" id="statusLine" hidden></div>
+
+<main class="grid" id="grid"></main>
+
+<div class="empty-state" id="emptyState" hidden>
+  <p>NO ENTRIES / 没有匹配的词条</p>
+</div>
+
+<aside class="group-panel" id="groupPanel" hidden aria-label="分组管理">
+  <div class="gp-head">
+    <span>GROUPS / 自定义分组</span>
+    <button type="button" id="groupClose" class="gp-close">×</button>
+  </div>
+  <form class="gp-create" id="groupCreateForm">
+    <input type="text" id="groupNameInput" placeholder="新组名称，如：幽闭空间" maxlength="24" autocomplete="off">
+    <button type="submit">创建</button>
+  </form>
+  <ul class="gp-list" id="groupList"></ul>
+  <p class="gp-hint">点击组名查看该组全部卡片；在卡片背面可将词条加入多个组。数据保存在本机浏览器。</p>
+</aside>
+
+<footer class="site-footer">
+  <span>暗房 / VISUAL DATABASE</span>
+  <span id="footerCount"></span>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
