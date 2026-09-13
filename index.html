@@ -3,68 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>暗房 / VISUAL DATABASE</title>
-<link rel="stylesheet" href="style.css">
+<title>暗房 DARKROOM — VISUAL RESEARCH DATABASE</title>
+<link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
 
-<header class="site-header">
+<!-- ============ 顶部：MEDIA 一级筛选 ============ -->
+<header id="topbar">
   <div class="brand">
-    <h1>暗房 <span class="brand-en">/ VISUAL DATABASE</span></h1>
-    <p class="brand-sub">视觉研究档案 · A VISUAL RESEARCH ARCHIVE</p>
+    <h1>暗房 <span class="en">DARKROOM</span></h1>
+    <span class="sub">VISUAL RESEARCH DATABASE · V2</span>
   </div>
-  <div class="header-meta">
-    <span class="entry-count" id="entryCount">— ENTRIES</span>
-    <button class="group-toggle" id="groupToggle" type="button">GROUPS [<span id="groupCount">0</span>]</button>
-  </div>
+  <nav id="mediaBar" aria-label="MEDIA 筛选"></nav>
+  <div class="counter" id="counter">—</div>
 </header>
 
-<nav class="toolbar">
-  <div class="cat-tabs" id="catTabs" role="tablist">
-    <button type="button" data-cat="ALL" class="active">ALL</button>
-    <button type="button" data-cat="A">ART</button>
-    <button type="button" data-cat="B">LITERATURE</button>
-    <button type="button" data-cat="C">SOCIAL</button>
-    <button type="button" data-cat="D">FORM</button>
-  </div>
-  <div class="search-box">
-    <input id="searchInput" type="search" autocomplete="off"
-           placeholder="Search — 词条 / 出处 / 标签 / 备注 / ID">
-  </div>
-</nav>
+<div id="layout">
+  <!-- ============ 左侧：DARKROOM AS ? 二级筛选 ============ -->
+  <aside id="sidebar" aria-label="DARKROOM AS 筛选">
+    <div class="side-title">DARKROOM<br>AS&nbsp;?</div>
+    <nav id="asBar"></nav>
+  </aside>
 
-<div class="tagbar-wrap">
-  <span class="tagbar-label">TAGS</span>
-  <div class="tagbar" id="tagbar"></div>
+  <!-- ============ 中央：IMAGE WALL ============ -->
+  <main id="wall" aria-label="照片墙"></main>
 </div>
 
-<div class="status-line" id="statusLine" hidden></div>
-
-<main class="grid" id="grid"></main>
-
-<div class="empty-state" id="emptyState" hidden>
-  <p>NO ENTRIES / 没有匹配的词条</p>
+<!-- ============ 详情态：显影 ============ -->
+<div id="detail" hidden role="dialog" aria-modal="true">
+  <div class="detail-body">
+    <figure class="detail-image">
+      <div class="develop-stack">
+        <img class="duo" alt="">
+        <img class="color" alt="">
+      </div>
+      <figcaption class="detail-thumbs"></figcaption>
+    </figure>
+    <aside class="detail-info">
+      <dl>
+        <div><dt>ID</dt><dd data-f="id"></dd></div>
+        <div><dt>TITLE / 词条</dt><dd data-f="title"></dd></div>
+        <div><dt>SOURCE / 出处</dt><dd data-f="source"></dd></div>
+        <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
+        <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
+        <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
+      </dl>
+    </aside>
+  </div>
+  <button id="detailBack" type="button">↓ BACK / 返回</button>
 </div>
 
-<aside class="group-panel" id="groupPanel" hidden aria-label="分组管理">
-  <div class="gp-head">
-    <span>GROUPS / 自定义分组</span>
-    <button type="button" id="groupClose" class="gp-close">×</button>
-  </div>
-  <form class="gp-create" id="groupCreateForm">
-    <input type="text" id="groupNameInput" placeholder="新组名称，如：幽闭空间" maxlength="24" autocomplete="off">
-    <button type="submit">创建</button>
-  </form>
-  <ul class="gp-list" id="groupList"></ul>
-  <p class="gp-hint">点击组名查看该组全部卡片；在卡片背面可将词条加入多个组。数据保存在本机浏览器。</p>
-</aside>
-
-<footer class="site-footer">
-  <span>暗房 / VISUAL DATABASE</span>
-  <span id="footerCount"></span>
-</footer>
-
-<script src="data.js"></script>
-<script src="app.js"></script>
+<script src="data/database.js"></script>
+<script src="js/app.js"></script>
+<script src="js/filterbar.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/imagewall.js"></script>
+<script src="js/detail.js"></script>
+<script>DR.init();</script>
 </body>
 </html>

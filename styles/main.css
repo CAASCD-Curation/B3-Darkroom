@@ -1,0 +1,351 @@
+/* ============================================================
+   暗房 DARKROOM V2 — 黑 / 红 / 档案 / 显影
+   ============================================================ */
+
+:root {
+  --bg: #070707;
+  --panel: #0c0c0c;
+  --ink: #d7d2c9;
+  --ink-dim: #6e6a63;
+  --red: #9a1808;          /* 安全灯红（暗红，高光上限） */
+  --red-dim: #5c110a;
+  --line: rgba(255, 255, 255, 0.13);
+  --font: "Helvetica Neue", Helvetica, Arial, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --mono: "SFMono-Regular", "Courier New", monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { background: none; border: none; cursor: pointer; color: inherit; font-family: inherit; }
+
+/* ---------------- 顶部 MEDIA 栏 ---------------- */
+
+#topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: baseline;
+  gap: 28px;
+  padding: 14px 20px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand h1 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+.brand .en { color: var(--red); letter-spacing: 0.14em; }
+.brand .sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+
+#mediaBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  flex: 1;
+}
+
+#mediaBar button {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  padding: 3px 0;
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+}
+#mediaBar button:hover { color: var(--ink); }
+#mediaBar button.active { color: var(--red); border-bottom-color: var(--red); }
+#mediaBar button .n { font-size: 9px; color: var(--ink-dim); margin-left: 3px; }
+
+.counter {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.counter b { color: var(--red); font-weight: 400; }
+
+/* ---------------- 左侧 DARKROOM AS ? ---------------- */
+
+#layout { display: flex; align-items: flex-start; }
+
+#sidebar {
+  position: sticky;
+  top: 62px;
+  width: 148px;
+  flex: none;
+  padding: 18px 0 18px 20px;
+  border-right: 1px solid var(--line);
+  min-height: calc(100vh - 62px);
+  display: flex;
+  flex-direction: column;
+}
+
+.side-title {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+#asBar { display: flex; flex-direction: column; gap: 2px; }
+
+#asBar button {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-dim);
+  padding: 5px 0 5px 10px;
+  border-left: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+#asBar button .zh { font-size: 9px; opacity: 0.6; }
+#asBar button:hover { color: var(--ink); }
+#asBar button.active { color: var(--red); border-left-color: var(--red); }
+
+/* ---------------- IMAGE WALL：暗房照片墙 ---------------- */
+
+body {
+  /* 极微弱的红色环境光：红安全灯从上方笼罩整面墙 */
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(217, 30, 20, 0.05), transparent 60%),
+    #060404;
+  background-attachment: fixed;
+}
+
+#wall {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 定位壳：负责位置与旋转（transform 在 .pin，hover 缩放在 .photo，互不干扰） */
+.pin {
+  position: absolute;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+/* 相纸：白纸在红安全灯下呈深红黑色 */
+.photo {
+  position: relative;
+  background: #381310;                  /* 暗红相纸 */
+  padding: 4.5% 4.5% 7%;                /* 相纸边框，下缘略厚（冲印照片） */
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.65),
+              0 1px 3px rgba(0, 0, 0, 0.8);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.imgwrap {
+  background: #170a08;                  /* 未加载时接近黑纸 */
+  line-height: 0;
+  transition: background 0.6s ease;
+}
+
+.imgwrap.on { background: var(--red); } /* 加载完成 = 显影：黑红双色调浮现 */
+
+.imgwrap img {
+  display: block;
+  width: 100%;
+  filter: grayscale(1) contrast(1.15) brightness(0.95);
+  mix-blend-mode: multiply;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.imgwrap.on img { opacity: 1; }
+
+/* hover：从墙上「挑选」一张——提亮、微放大、层级提升，不改变随机位置 */
+.pin:hover { z-index: 40 !important; }
+.pin:hover .photo {
+  transform: scale(1.07);
+  background: #4a1a14;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8),
+              0 2px 6px rgba(0, 0, 0, 0.7);
+}
+.pin:hover .imgwrap.on img {
+  filter: grayscale(1) contrast(1.15) brightness(1.15);
+}
+
+.cap {
+  position: absolute;
+  left: 0; right: 0; bottom: 1.2%;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: rgba(215, 210, 201, 0.85);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.cap .t { color: rgba(215, 210, 201, 0.5); margin-left: 6px; }
+.pin:hover .cap { opacity: 1; }
+
+/* 缺图占位：同样的相纸形态，纸面待显影 */
+.photo.pending .ph {
+  aspect-ratio: 4 / 5;
+  background: #120808;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.photo.pending .pid {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--red-dim);
+}
+.photo.pending .pt {
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  color: var(--ink-dim);
+}
+
+.wall-empty {
+  padding: 80px 40px;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: var(--ink-dim);
+}
+
+/* ---------------- 详情态 / 显影 ---------------- */
+
+#detail {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(4, 4, 4, 0.98);
+  display: flex;
+  flex-direction: column;
+}
+
+#detail[hidden] { display: none; }
+
+#detailBack {
+  align-self: center;
+  margin: 0 20px 22px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+  padding: 10px 24px;
+  border-top: 1px solid var(--line);
+}
+#detailBack:hover { color: var(--red); }
+
+.detail-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  padding: 8px 20px 20px;
+  gap: 0;
+}
+
+.detail-image {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.develop-stack { position: relative; max-width: 100%; max-height: 100%; display: flex; }
+.develop-stack img { max-width: 100%; max-height: calc(100vh - 160px); object-fit: contain; display: block; }
+
+.develop-stack .duo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  background: var(--red);
+  filter: grayscale(1) contrast(1.12) brightness(0.92);
+  mix-blend-mode: multiply;
+}
+/* 显影：黑红渐隐，原彩浮现 */
+.develop-stack .color { opacity: 0; transition: opacity 1.4s ease 0.15s; }
+#detail.developed .develop-stack .color { opacity: 1; }
+#detail.developed .develop-stack .duo { opacity: 0; transition: opacity 1.4s ease 0.15s; }
+
+.detail-thumbs { display: flex; gap: 4px; }
+.detail-thumbs img { height: 40px; filter: grayscale(1) brightness(0.8); cursor: default; }
+
+.detail-info {
+  width: 320px;
+  flex: none;
+  border-left: 1px solid var(--line);
+  padding: 4px 0 0 22px;
+  overflow-y: auto;
+}
+
+.detail-info dl > div { margin-bottom: 14px; }
+.detail-info dt {
+  font-size: 9px;
+  letter-spacing: 0.24em;
+  color: var(--red);
+  margin-bottom: 3px;
+}
+.detail-info dd { font-size: 13px; line-height: 1.7; color: var(--ink); word-break: break-word; }
+.detail-info dd.dim { color: var(--ink-dim); }
+.detail-info a { color: var(--ink); text-underline-offset: 3px; }
+
+.detail-info .tag { font-size: 11px; color: var(--ink-dim); margin-right: 10px; white-space: nowrap; }
+.detail-info .tag.cat { color: var(--ink); }
+
+/* ---------------- 响应式 ---------------- */
+
+@media (max-width: 900px) {
+  #sidebar { width: 118px; padding-left: 14px; }
+  #topbar { gap: 16px; flex-wrap: wrap; }
+}
+
+@media (max-width: 640px) {
+  #layout { flex-direction: column; }
+  #sidebar {
+    position: static;
+    width: 100%;
+    min-height: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 10px 16px;
+  }
+  .side-title { display: none; }
+  #asBar { flex-direction: row; flex-wrap: wrap; gap: 4px 14px; }
+  #asBar button { border-left: none; border-bottom: 1px solid transparent; padding: 3px 0; }
+  #asBar button.active { border-bottom-color: var(--red); }
+  .detail-body { flex-direction: column; overflow-y: auto; }
+  .detail-info { width: 100%; border-left: none; border-top: 1px solid var(--line); padding: 16px 0 0; }
+  .develop-stack img { max-height: 60vh; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .develop-stack .color, #detail.developed .develop-stack .duo { transition: none; }
+  .photo, .pin, .imgwrap img { transition: none; }
+}
