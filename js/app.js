@@ -33,6 +33,7 @@ window.DR = (function () {
     DR.filterbar.render();
     DR.sidebar.render();
     DR.wall.render();
+    if (DR.split) DR.split.render(); /* 二分模式：右侧 LIGHT 同步筛选结果 */
     var n = filtered().length;
     document.getElementById("counter").innerHTML =
       "<b>" + n + "</b> / " + DB.entries.length + " ENTRIES";
@@ -48,6 +49,7 @@ window.DR = (function () {
     DR.filterbar.init();
     DR.sidebar.init();
     DR.wall.init();
+    DR.split.init();
     DR.detail.init();
     render();
   }

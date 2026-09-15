@@ -8,14 +8,21 @@
 </head>
 <body>
 
-<!-- ============ 顶部：MEDIA 一级筛选 ============ -->
+<!-- ============ 顶部：品牌 + MEDIA 索引行 ============ -->
 <header id="topbar">
-  <div class="brand">
-    <h1>暗房 <span class="en">DARKROOM</span></h1>
-    <span class="sub">VISUAL RESEARCH DATABASE · V2</span>
+  <div class="top-row">
+    <div class="brand">
+      <h1>暗房 <span class="en">DARKROOM</span></h1>
+      <span class="sub">VISUAL RESEARCH DATABASE · V2</span>
+    </div>
+    <div class="counter" id="counter">—</div>
+    <button id="safelightBtn" type="button" aria-pressed="false"><span class="dot">○</span> SAFELIGHT</button>
   </div>
-  <nav id="mediaBar" aria-label="MEDIA 筛选"></nav>
-  <div class="counter" id="counter">—</div>
+  <div class="frow">
+    <span class="fhead">MEDIA</span>
+    <nav class="fcats" id="mediaCats" aria-label="MEDIA 小类"></nav>
+    <button class="freset" id="mediaReset" type="button" hidden>RESET</button>
+  </div>
 </header>
 
 <div id="layout">
@@ -25,32 +32,50 @@
     <nav id="asBar"></nav>
   </aside>
 
-  <!-- ============ 中央：IMAGE WALL ============ -->
+  <!-- ============ 中央：IMAGE WALL（二分模式下 = DARKROOM / INDEX） ============ -->
   <main id="wall" aria-label="照片墙"></main>
+
+  <!-- ============ 右侧：LIGHT / 原彩显影区（SAFELIGHT 打开后出现） ============ -->
+  <section id="light" aria-label="LIGHT 原彩内容">
+    <header class="light-head">
+      <span class="light-title">LIGHT</span>
+      <label class="dev">
+        <span class="dev-label">DEVELOPMENT</span>
+        <input id="devSlider" type="range" min="10" max="100" step="1" value="50" aria-label="DEVELOPMENT 显影程度">
+        <span class="dev-val" id="devVal">50%</span>
+      </label>
+    </header>
+    <div id="lightGrid" class="light-grid" data-band="title"></div>
+  </section>
 </div>
 
-<!-- ============ 详情态：显影 ============ -->
+<!-- ============ 详情卡片：从原照片展开 / 显影 ============ -->
 <div id="detail" hidden role="dialog" aria-modal="true">
-  <div class="detail-body">
-    <figure class="detail-image">
-      <div class="develop-stack">
-        <img class="duo" alt="">
-        <img class="color" alt="">
-      </div>
-      <figcaption class="detail-thumbs"></figcaption>
-    </figure>
-    <aside class="detail-info">
-      <dl>
-        <div><dt>ID</dt><dd data-f="id"></dd></div>
-        <div><dt>TITLE / 词条</dt><dd data-f="title"></dd></div>
-        <div><dt>SOURCE / 出处</dt><dd data-f="source"></dd></div>
-        <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
-        <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
-        <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
-      </dl>
-    </aside>
+  <div class="detail-backdrop"></div>
+  <div class="detail-card">
+    <button id="detailClose" type="button" aria-label="关闭">×</button>
+    <button id="detailPrev" class="detail-side" type="button" aria-label="上一条">←</button>
+    <button id="detailNext" class="detail-side next" type="button" aria-label="下一条">→</button>
+    <div class="detail-body">
+      <figure class="detail-image">
+        <div class="develop-stack">
+          <img class="duo" alt="">
+          <img class="color" alt="">
+        </div>
+        <figcaption class="detail-thumbs"></figcaption>
+      </figure>
+      <aside class="detail-info">
+        <dl>
+          <div><dt>ID</dt><dd data-f="id"></dd></div>
+          <div><dt>TITLE / 词条</dt><dd data-f="title"></dd></div>
+          <div><dt>SOURCE / 出处</dt><dd data-f="source"></dd></div>
+          <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
+          <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
+          <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
+        </dl>
+      </aside>
+    </div>
   </div>
-  <button id="detailBack" type="button">↓ BACK / 返回</button>
 </div>
 
 <script src="data/database.js"></script>
@@ -58,6 +83,7 @@
 <script src="js/filterbar.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/imagewall.js"></script>
+<script src="js/split.js"></script>
 <script src="js/detail.js"></script>
 <script>DR.init();</script>
 </body>

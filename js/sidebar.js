@@ -4,7 +4,7 @@ DR.sidebar = (function () {
   var bar;
 
   function render() {
-    var items = [{ key: "ALL", en: "ALL", zh: "全部" }].concat(DR.db.meta.darkroomAs);
+    var items = DR.db.meta.darkroomAs;
     bar.innerHTML = "";
     items.forEach(function (cat) {
       var n = DR.countFor("as", cat.key);
@@ -21,6 +21,14 @@ DR.sidebar = (function () {
       b.addEventListener("click", function () { DR.setFilter("as", cat.key); });
       bar.appendChild(b);
     });
+    /* 侧边栏 RESET：只重置 DARKROOM AS 这一条筛选线 */
+    var r = document.createElement("button");
+    r.type = "button";
+    r.className = "side-reset";
+    r.textContent = "RESET";
+    r.hidden = DR.state.as === "ALL";
+    r.addEventListener("click", function () { DR.setFilter("as", "ALL"); });
+    bar.appendChild(r);
   }
 
   function init() { bar = document.getElementById("asBar"); }

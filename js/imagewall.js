@@ -71,7 +71,11 @@ DR.wall = (function () {
     photo.appendChild(cap);
 
     pin.appendChild(photo);
-    pin.addEventListener("click", function () { DR.detail.open(e.id); });
+    pin.addEventListener("click", function () {
+      /* 二分模式：左墙 = INDEX，点击联动右侧 LIGHT；否则打开详情卡片 */
+      if (DR.split && DR.split.active()) DR.split.select(e.id);
+      else DR.detail.open(e.id);
+    });
     return pin;
   }
 
@@ -132,6 +136,8 @@ DR.wall = (function () {
     var frag = document.createDocumentFragment();
     items.forEach(function (it) { frag.appendChild(buildItem(it.e, it)); });
     wall.appendChild(frag);
+    /* 重排后恢复二分模式的选中高亮 */
+    if (DR.split) DR.split.afterWallRender();
   }
 
   var resizeTimer = null;
