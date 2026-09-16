@@ -3,17 +3,21 @@
    ============================================================ */
 
 :root {
-  --bg: #070707;
-  --panel: #0c0c0c;
-  --ink: #d7d2c9;
-  --ink-dim: #6e6a63;
+  --bg: #10100E;             /* 暗房墙面黑：不使用纯黑 */
+  --panel: #10100E;
+  --ink: #E6E0D4;            /* 相纸白：正文 / 主要信息，不用刺眼纯白 */
+  --ink-dim: #8A7E6C;        /* 暖灰褐：ID / metadata / 次级信息 */
   --red: #9a1808;          /* 安全灯红（暗红，高光上限） */
   --red-dim: #5c110a;
-  --line: rgba(255, 255, 255, 0.13);
-  /* 英文优先 Helvetica，中文回落思源黑体 */
+  --line: rgba(230, 224, 212, 0.13);
+  /* 英文标题：窄体无衬线（摄影出版物 / 索引系统感） */
+  --font-condensed: "Helvetica Neue Condensed", "Arial Narrow",
+                    "Roboto Condensed", "Liberation Sans Narrow", sans-serif;
+  /* 正文：英文优先 Helvetica，中文回落思源黑体 */
   --font: "Helvetica Neue", Helvetica, Arial,
           "Source Han Sans SC", "Source Han Sans CN", "Noto Sans SC", "Noto Sans CJK SC",
           "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  /* 编号 / 元数据：等宽（档案编号、数据库记录感） */
   --mono: "SFMono-Regular", "Courier New", monospace;
 }
 
@@ -53,7 +57,12 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
   white-space: nowrap;
   line-height: 1.2;
 }
-.brand .en { color: var(--red); letter-spacing: 0.14em; }
+.brand .en {
+  font-family: var(--font-condensed);   /* 英文大栏目名：窄体无衬线 */
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.18em;
+}
 .brand .sub {
   display: block;
   margin-top: 3px;
@@ -177,10 +186,11 @@ body.split #safelightBtn { color: var(--ink); border-color: var(--red-dim); }
 }
 
 .side-title {
-  font-size: 12px;               /* 二级标题 */
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  line-height: 1.7;
+  font-family: var(--font-condensed);   /* 大型英文栏目名：窄体 */
+  font-size: 14px;               /* 二级标题 */
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  line-height: 1.6;
   color: var(--ink);
   margin-bottom: 12px;
 }
@@ -223,7 +233,7 @@ body {
   /* 极微弱的红色环境光：红安全灯从上方笼罩整面墙 */
   background:
     radial-gradient(ellipse 120% 60% at 50% -10%, rgba(217, 30, 20, 0.05), transparent 60%),
-    #060404;
+    #10100E;
   background-attachment: fixed;
 }
 
@@ -288,7 +298,7 @@ body {
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 0.14em;
-  color: rgba(215, 210, 201, 0.85);
+  color: rgba(230, 224, 212, 0.85);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -296,7 +306,7 @@ body {
   opacity: 0;
   transition: opacity 0.25s ease;
 }
-.cap .t { color: rgba(215, 210, 201, 0.5); margin-left: 6px; }
+.cap .t { color: rgba(230, 224, 212, 0.5); margin-left: 6px; }
 .pin:hover .cap { opacity: 1; }
 
 /* 缺图占位：同样的相纸形态，纸面待显影 */
@@ -386,10 +396,22 @@ body.split #light {
 }
 
 .light-title {
-  font-size: 11px;
-  letter-spacing: 0.3em;
+  font-family: var(--font-condensed);   /* ENLARGER：窄体栏目名 */
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
   color: var(--red);
   white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.light-title .zh {
+  font-family: var(--font);
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  color: var(--ink-dim);
 }
 
 .dev {
@@ -398,13 +420,6 @@ body.split #light {
   gap: 14px;
   flex: 1;
   min-width: 0;
-}
-
-.dev-label {
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  color: var(--ink-dim);
-  white-space: nowrap;
 }
 
 .dev-val {
@@ -538,6 +553,7 @@ body.split #light {
 }
 .l-meta .k {
   display: block;
+  font-family: var(--mono);          /* LIGHT 网格字段名：等宽 */
   font-size: 8px;
   letter-spacing: 0.22em;
   color: var(--red);
@@ -662,6 +678,7 @@ body.split #light {
 
 .detail-info dl > div { margin-bottom: 14px; }
 .detail-info dt {
+  font-family: var(--mono);        /* 字段名：等宽，档案记录感 */
   font-size: 9px;
   letter-spacing: 0.24em;
   color: var(--red);
@@ -676,6 +693,7 @@ body.split #light {
 
 /* 词条信息层级：词条名 > 正文 > 辅助信息 */
 .detail-info dd[data-f="id"] { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-dim); }
+.detail-info dd[data-f="year"] { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-dim); }
 .detail-info dd[data-f="title"] { font-size: 17px; font-weight: 600; line-height: 1.5; }
 .detail-info dd[data-f="description"] { font-size: 12px; color: var(--ink); opacity: 0.85; }
 
@@ -713,6 +731,9 @@ body.split #light {
 
 @media (max-width: 640px) {
   #layout { flex-direction: column; }
+  /* column 方向下 align-items:flex-start 会把墙收缩到 0 宽（内容全为绝对定位），必须显式给宽 */
+  /* 同时 flex:1 的 flex-basis:0% 会覆盖内联 height，把墙压成 0 高并裁掉所有照片，必须退出 flex 伸缩 */
+  #wall { width: 100%; flex: none; }
   .top-row { gap: 12px; padding: 12px 16px 10px; }
   .fhead { width: 78px; font-size: 8px; letter-spacing: 0.1em; }
   .fcats { flex-wrap: wrap; }

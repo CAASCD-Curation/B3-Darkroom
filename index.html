@@ -8,7 +8,8 @@
 </head>
 <body>
 
-<!-- ============ 顶部：品牌 + MEDIA 索引行 ============ -->
+<!-- ============ 顶部：品牌 + 计数 + SAFELIGHT（MEDIA 顶部导航已移除，
+     media 字段保留于数据层，用于筛选逻辑与标签显示） ============ -->
 <header id="topbar">
   <div class="top-row">
     <div class="brand">
@@ -17,11 +18,6 @@
     </div>
     <div class="counter" id="counter">—</div>
     <button id="safelightBtn" type="button" aria-pressed="false"><span class="dot">○</span> SAFELIGHT</button>
-  </div>
-  <div class="frow">
-    <span class="fhead">MEDIA</span>
-    <nav class="fcats" id="mediaCats" aria-label="MEDIA 小类"></nav>
-    <button class="freset" id="mediaReset" type="button" hidden>RESET</button>
   </div>
 </header>
 
@@ -38,10 +34,9 @@
   <!-- ============ 右侧：LIGHT / 原彩显影区（SAFELIGHT 打开后出现） ============ -->
   <section id="light" aria-label="LIGHT 原彩内容">
     <header class="light-head">
-      <span class="light-title">LIGHT</span>
+      <span class="light-title">ENLARGER<span class="zh">放大机</span></span>
       <label class="dev">
-        <span class="dev-label">DEVELOPMENT</span>
-        <input id="devSlider" type="range" min="10" max="100" step="1" value="50" aria-label="DEVELOPMENT 显影程度">
+        <input id="devSlider" type="range" min="10" max="100" step="1" value="50" aria-label="Enlarger 放大机 显影程度">
         <span class="dev-val" id="devVal">50%</span>
       </label>
     </header>
