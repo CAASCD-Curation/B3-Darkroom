@@ -37,7 +37,7 @@ DR.wall = (function () {
 
     if (e.images.length) {
       var wrap = document.createElement("div");
-      wrap.className = "imgwrap";
+      wrap.className = "imgwrap";   /* MODE 01 照片墙永远黑红双色调；章节滤镜只属于 ORGANIZE */
       var img = document.createElement("img");
       img.loading = "lazy";
       img.decoding = "async";

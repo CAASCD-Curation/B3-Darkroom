@@ -72,6 +72,21 @@ DR.detail = (function () {
       tagDD.appendChild(s);
       tagCount++;
     }
+    /* 三大章节 / 小结构标签在最前 */
+    if (e.exChapterInfo) {
+      var sc = document.createElement("span");
+      sc.className = "tag cat";
+      sc.textContent = e.exChapterInfo.no + " · " + e.exChapterInfo.zh;
+      tagDD.appendChild(sc);
+      tagCount++;
+    }
+    if (e.exSubInfo) {
+      var ss = document.createElement("span");
+      ss.className = "tag cat";
+      ss.textContent = e.exSubInfo.no + "｜" + e.exSubInfo.zh;
+      tagDD.appendChild(ss);
+      tagCount++;
+    }
     addCatTag(MEDIA_ZH, e.media);
     addCatTag(AS_ZH, e.darkroomAs);
     if (e.tags && e.tags.length) {

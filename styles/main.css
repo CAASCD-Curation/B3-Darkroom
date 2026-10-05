@@ -7,8 +7,8 @@
   --panel: #10100E;
   --ink: #E6E0D4;            /* 相纸白：正文 / 主要信息，不用刺眼纯白 */
   --ink-dim: #8A7E6C;        /* 暖灰褐：ID / metadata / 次级信息 */
-  --red: #9a1808;          /* 安全灯红（暗红，高光上限） */
-  --red-dim: #5c110a;
+  --red: #E40D14;             /* 全站唯一强调红：标题 / 按钮 / 交互 / 双色调显影 */
+  --red-dim: #E40D14;         /* 与 --red 保持一致，不再使用第二种红色 */
   --line: rgba(230, 224, 212, 0.13);
   /* 英文标题：窄体无衬线（摄影出版物 / 索引系统感） */
   --font-condensed: "Helvetica Neue Condensed", "Arial Narrow",
@@ -50,6 +50,7 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
   padding: 14px 20px 12px;
 }
 
+.brand { cursor: pointer; }   /* 点击返回开屏首页（视觉样式不变） */
 .brand h1 {
   font-size: 20px;               /* 一级标题：最大 */
   font-weight: 600;
@@ -169,63 +170,9 @@ button { background: none; border: none; cursor: pointer; color: inherit; font-f
 #safelightBtn:hover { color: var(--ink); border-color: var(--red-dim); }
 body.split #safelightBtn { color: var(--ink); border-color: var(--red-dim); }
 
-/* ---------------- 左侧 DARKROOM AS 索引（表格化） ---------------- */
+/* ---------------- 主布局 ---------------- */
 
 #layout { display: flex; align-items: flex-start; }
-
-#sidebar {
-  position: sticky;
-  top: var(--topbar-h, 62px);
-  width: 168px;
-  flex: none;
-  padding: 18px 0 18px 20px;
-  border-right: 1px solid var(--line);
-  min-height: calc(100vh - var(--topbar-h, 62px));
-  display: flex;
-  flex-direction: column;
-}
-
-.side-title {
-  font-family: var(--font-condensed);   /* 大型英文栏目名：窄体 */
-  font-size: 14px;               /* 二级标题 */
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  line-height: 1.6;
-  color: var(--ink);
-  margin-bottom: 12px;
-}
-
-#asBar { display: flex; flex-direction: column; }
-
-#asBar button {
-  text-align: left;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  color: var(--ink-dim);
-  padding: 9px 8px 9px 0;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 6px;
-  transition: color 0.2s ease;
-}
-#asBar button .zh { font-size: 9px; opacity: 0.6; }
-#asBar button:hover { color: var(--ink); }
-#asBar button.active { color: var(--red); box-shadow: inset 2px 0 0 var(--red); padding-left: 8px; }
-
-/* 侧边栏 RESET */
-#asBar .side-reset {
-  margin-top: 14px;
-  border: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  padding: 7px 0;
-  justify-content: center;
-}
-#asBar .side-reset:hover { color: var(--red); border-color: var(--red-dim); }
-#asBar .side-reset[hidden] { display: none; }
 
 /* ---------------- IMAGE WALL：暗房照片墙 ---------------- */
 
@@ -275,13 +222,32 @@ body {
   filter: grayscale(1) contrast(1.15) brightness(0.95);
   mix-blend-mode: multiply;
   opacity: 0;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.6s ease, filter 0.3s ease;
 }
 
 .imgwrap.on img { opacity: 1; }
 
-/* hover：从墙上「挑选」一张——提亮、微放大、层级提升，不改变随机位置 */
-.pin:hover { z-index: 40 !important; }
+/* ---------- 模块 B：照片内容的章节滤镜（只属于 ORGANIZE，不进入 MODE 01 照片墙） ---------- */
+/* 一、黑白负片：反色黑白 */
+#organize .imgwrap.tone-bw.on { background: #131210; }
+#organize .imgwrap.tone-bw img {
+  filter: grayscale(1) invert(1) contrast(1.08) brightness(0.98);
+  mix-blend-mode: normal;
+}
+/* 二、彩色负片：橙棕色负片（反色 + 深橙棕纸基，偏橙偏棕偏暗） */
+#organize .imgwrap.tone-cn.on { background: #131210; }
+#organize .imgwrap.tone-cn img {
+  filter: invert(1) sepia(1) saturate(1.9) hue-rotate(-22deg) contrast(1.05) brightness(0.85);
+  mix-blend-mode: normal;
+}
+/* 三、反转片：原彩 */
+#organize .imgwrap.tone-rv.on { background: #131210; }
+#organize .imgwrap.tone-rv img {
+  filter: none;
+  mix-blend-mode: normal;
+}
+
+/* hover：从墙上「挑选」一张——提亮、微放大，层级关系保持稳定（不提升 z-index） */
 .pin:hover .photo {
   transform: scale(1.07);
   background: #4a1a14;
@@ -290,6 +256,15 @@ body {
 }
 .pin:hover .imgwrap.on img {
   filter: grayscale(1) contrast(1.15) brightness(1.15);
+}
+#organize .opin:hover .imgwrap.tone-bw img {
+  filter: grayscale(1) invert(1) contrast(1.08) brightness(1.14);
+}
+#organize .opin:hover .imgwrap.tone-cn img {
+  filter: invert(1) sepia(1) saturate(1.9) hue-rotate(-22deg) contrast(1.05) brightness(0.98);
+}
+#organize .opin:hover .imgwrap.tone-rv img {
+  filter: brightness(1.1);
 }
 
 .cap {
@@ -718,7 +693,6 @@ body.split #light {
 /* ---------------- 响应式 ---------------- */
 
 @media (max-width: 900px) {
-  #sidebar { width: 132px; padding-left: 14px; }
   .top-row { gap: 16px; flex-wrap: wrap; }
   .fhead { width: 96px; letter-spacing: 0.12em; }
   /* 窄屏：小类换行成多行，绝不横向滚动 */
@@ -740,19 +714,6 @@ body.split #light {
   .fcats button { flex: 1 1 30%; padding: 5px 2px; }
   .fcats button .z { font-size: 10px; }
   .fcats button .e { font-size: 6.5px; }
-  #sidebar {
-    position: static;
-    width: 100%;
-    min-height: 0;
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    padding: 10px 16px;
-  }
-  .side-title { display: none; }
-  #asBar { flex-direction: row; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
-  #asBar button { border-bottom: 1px solid transparent; padding: 3px 0; }
-  #asBar button.active { box-shadow: none; border-bottom-color: var(--red); padding-left: 0; }
-  #asBar .side-reset { margin-top: 0; padding: 4px 12px; }
   .detail-card { width: calc(100vw - 20px); max-height: calc(100vh - 20px); }
   .detail-body { flex-direction: column; overflow-y: auto; padding: 42px 16px 16px; gap: 16px; }
   .detail-info { width: 100%; border-left: none; border-top: 1px solid var(--line); padding: 16px 0 0; overflow-y: visible; }
@@ -769,4 +730,453 @@ body.split #light {
 @media (prefers-reduced-motion: reduce) {
   .develop-stack .color, #detail.developed .develop-stack .duo { transition: none; }
   .photo, .pin, .imgwrap img { transition: none; }
+}
+
+/* ============================================================
+   开屏 LANDING — 黑场 / 红色 DARKROOM 剪切蒙版标题
+   ============================================================ */
+
+/* 超窄体标题字（参考海报的 condensed 巨型标题），仅开屏使用 */
+@font-face {
+  font-family: "Anton";
+  src: url("../fonts/Anton-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body.landing-open { overflow: hidden; }   /* 开屏期间锁定底层滚动 */
+
+#landing {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: #0D0C0A;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 4vw 16px;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+#landing.leaving { opacity: 0; pointer-events: none; }
+#landing.gone { display: none; }          /* 已进入照片墙：开屏保留在 DOM 中，可随时返回 */
+
+/* 细颗粒：静态噪点层（非动画），呼应海报印刷质感 */
+#landing::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="240" height="240" filter="url(%23n)" opacity="0.6"/></svg>');
+}
+
+/* 顶部三栏小字（左 / 中 / 右） */
+.land-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-family: var(--font-condensed);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* 中央巨型标题：SVG 剪切蒙版，图片被限制在 DARKROOM 字形内部 */
+.land-title {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.land-title svg { width: 100%; height: auto; max-height: 100%; display: block; }
+.land-title text {
+  font-family: "Anton", var(--font-condensed);
+  font-size: 420px;
+}
+.dr-base { fill: var(--red); }
+/* multiply 混合：图片高光显红、暗部显黑 → 字形内呈海报式黑红双色调 */
+.dr-img {
+  filter: grayscale(1) contrast(1.12);
+  mix-blend-mode: multiply;
+  transition: opacity 1.6s ease;
+}
+.dr-img.dr-off { opacity: 0; }
+
+/* 底部信息行：红 20 / 两段小字 / 中央符号 / 红 26 */
+.land-info {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  align-items: center;
+  gap: 3vw;
+  padding: 8px 0 14px;
+}
+.land-year {
+  font-family: "Anton", var(--font-condensed);
+  font-size: 46px;
+  line-height: 1;
+  color: var(--red);
+}
+.land-note {
+  font-size: 10px;
+  line-height: 1.65;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+.land-mark { font-size: 18px; color: var(--ink); }
+
+/* 底部图片条：黑红双色调 + 细边框 */
+.land-strip {
+  height: 20vh;
+  min-height: 100px;
+  border: 1px solid var(--line);
+  background: var(--red);
+  overflow: hidden;
+}
+.land-strip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.12);
+  mix-blend-mode: multiply;
+}
+
+/* 进入提示 */
+.land-hint {
+  margin-top: 12px;
+  text-align: center;
+  font-family: var(--font-condensed);
+  font-size: 9px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* 移动端：压缩信息行与图片条，保持标题为绝对主体 */
+@media (max-width: 760px) {
+  #landing { padding: 16px 14px 12px; }
+  .land-top { font-size: 9px; letter-spacing: 0.1em; }
+  .land-info { grid-template-columns: auto 1fr auto; padding: 6px 0 10px; }
+  .land-note { display: none; }
+  .land-mark { justify-self: center; }
+  .land-year { font-size: 30px; }
+  .land-strip { height: 15vh; min-height: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #landing, .dr-img { transition: none; }
+}
+
+/* ============================================================
+   MODE 02 — TAG / ORGANIZE（与照片墙平行的第二种观看方式）
+   ============================================================ */
+
+/* 顶栏模式切换：PHOTO WALL / ORGANIZE */
+.mode-switch {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-condensed);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+.mode-switch .sep { color: var(--ink-dim); opacity: 0.6; }
+.mode-switch button {
+  color: var(--ink-dim);
+  letter-spacing: 0.18em;
+  padding: 4px 2px;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.mode-switch button:hover { color: var(--ink); }
+.mode-switch button.active { color: var(--red); border-bottom-color: var(--red); }
+
+/* ORGANIZE 模式：隐藏照片墙与 SAFELIGHT（照片墙专属），切换不重载页面 */
+body.mode-organize #layout { display: none; }
+body.mode-organize #safelightBtn { display: none; }
+
+#organize {
+  display: flex;
+  align-items: stretch;
+  height: calc(100vh - var(--topbar-h, 62px));
+}
+#organize[hidden] { display: none; }
+
+/* ---------------- 左：DETAILS（复用详情弹窗的字段结构），与图片区呈 4:6 ---------------- */
+.org-details {
+  flex: 1 1 40%;
+  min-width: 190px;
+  border-right: 1px solid var(--line);
+  padding: 16px 18px 20px;
+  overflow-y: auto;
+}
+.org-d-head {
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.org-d-empty {
+  font-family: var(--font-condensed);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  line-height: 2.1;
+  color: var(--ink-dim);
+  padding: 16px 0;
+}
+.org-d-empty span { font-size: 10px; letter-spacing: 0.08em; opacity: 0.65; }
+.org-d-body dl > div { margin-bottom: 13px; }
+.org-d-body dt {
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+  margin-bottom: 4px;
+}
+.org-d-body dd { font-size: 12.5px; line-height: 1.7; color: var(--ink); word-break: break-word; }
+.org-d-body dd.dim { color: var(--ink-dim); }
+.org-d-body .tag { font-size: 10.5px; color: var(--ink-dim); margin-right: 9px; white-space: nowrap; }
+.org-d-body .tag.cat { color: var(--ink); }
+.org-d-body dd[data-f="id"] { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-dim); }
+.org-d-body dd[data-f="year"] { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-dim); }
+.org-d-body dd[data-f="title"] { font-size: 16px; font-weight: 600; line-height: 1.5; }
+.org-d-body dd[data-f="description"] { font-size: 11.5px; opacity: 0.85; }
+
+/* ---------------- 中：控制行 + 自由排列区域 ---------------- */
+.org-main {
+  flex: 1 1 60%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.org-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.org-controls button {
+  font-family: var(--font-condensed);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.org-controls button:hover { color: var(--ink); border-color: var(--red); }
+.org-controls button.on { color: var(--red); border-color: var(--red); }
+.org-count { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--ink-dim); }
+.org-count b { color: var(--red); font-weight: 400; }
+.org-hint {
+  margin-left: auto;
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  color: var(--ink-dim);
+  opacity: 0.65;
+}
+
+.org-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.org-empty {
+  padding: 40px 20px;
+  font-family: var(--font-condensed);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ink-dim);
+}
+
+/* 散落的单张照片：复用照片墙 .photo / .imgwrap / .cap 的相纸样式 */
+.opin {
+  position: absolute;
+  cursor: grab;
+  touch-action: none;
+  transition: left 0.5s cubic-bezier(0.22, 0.8, 0.24, 1),
+              top 0.5s cubic-bezier(0.22, 0.8, 0.24, 1),
+              width 0.5s cubic-bezier(0.22, 0.8, 0.24, 1),
+              transform 0.5s cubic-bezier(0.22, 0.8, 0.24, 1),
+              filter 0.45s ease, opacity 0.45s ease;
+}
+.org-area.no-anim .opin { transition: none; }
+.opin.dragging { cursor: grabbing; transition: none; }
+.opin .photo { transition: box-shadow 0.25s ease, background 0.3s ease; }
+.opin.magnifying { cursor: default; }
+.opin.magnifying .imgwrap { cursor: default; }
+
+/* ---------- STATE 02 SELECTED：聚焦中央，其他照片虚化为背景（不可点击、hover 不出文字） ---------- */
+.org-area.has-selection .opin:not(.selected) {
+  filter: blur(4px) brightness(0.72);
+  opacity: 0.42;
+  cursor: default;                        /* 背景照片：不可点击、不可拖动、hover 无反馈 */
+}
+.opin.selected {
+  cursor: grab;                           /* 放大片可在整个展示区域内拖动 */
+  z-index: 1100 !important;               /* 视觉最上层 */
+}
+.opin.selected .photo {
+  box-shadow: 0 0 0 1px var(--red),
+              0 12px 34px rgba(0, 0, 0, 0.8);
+}
+
+/* 聚焦照片下方的浮动操作：放大镜（随照片定位，点击空白处退出） */
+.org-fab {
+  position: absolute;
+  z-index: 1200;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+  transition: left 0.5s cubic-bezier(0.22, 0.8, 0.24, 1),
+              top 0.5s cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+/* 生命周期修复：display:flex 会覆盖 hidden 属性导致按钮残留——显式让 hidden = 真正不渲染 */
+.org-fab[hidden] { display: none; }
+.org-fab button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  background: #0D0C0A;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.org-fab button:hover { color: var(--ink); border-color: var(--red); }
+.org-fab button.on { color: var(--red); border-color: var(--red); }
+
+/* 放大片镜片：圆形可拖动，父级 = #orgArea，活动范围 = 整个右侧照片墙；内部为原彩高清细节 */
+.lens {
+  position: absolute;
+  width: 176px;
+  height: 176px;
+  border-radius: 50%;
+  border: 1px solid var(--red);
+  background-repeat: no-repeat;
+  background-color: #000;
+  cursor: grab;
+  touch-action: none;
+  z-index: 1300;                          /* 高于选中照片(1100)与 +/− 按钮(1200) */
+}
+.lens.dragging { cursor: grabbing; }
+.lens.lens-void { background-image: none !important; }   /* 镜片在照片之外：空镜片 */
+
+/* ---------------- 右：索引贴导航（平面 index tabs，从页面右缘伸出，按章节分色） ---------------- */
+/* 章节色固定为：一 黑底白字 / 二 橘棕(红)底白字 / 三 白底黑字（只作用于索引贴，不进照片墙 UI） */
+:root {
+  --tab-cn: #E40D14;                    /* 第二章的「红」= 项目指定红（与全站 --red 同色） */
+}
+.org-tags {
+  flex: none;
+  align-self: stretch;
+  padding: 18px 0 18px 10px;            /* 右侧 0 留白：索引贴贴齐页面边缘 */
+  display: flex;
+  flex-direction: column;               /* 八个索引贴 = 同一竖列，不换列 */
+  flex-wrap: nowrap;
+  align-items: flex-end;                /* 全部贴齐右缘，选中项向左伸出更长 */
+  gap: 6px;
+  overflow-y: auto;
+  overflow-x: visible;
+  scrollbar-width: none;
+}
+.org-tags::-webkit-scrollbar { display: none; }
+.tg-group { display: contents; }
+
+/* 索引贴本体：实体矩形标签，左侧小圆角（右缘贴齐页面），竖排标题文字，始终填充章节色 */
+.tg-group button {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  border: 1px solid transparent;
+  border-right: none;                   /* 右缘贴齐页面 = 从边缘伸出 */
+  border-radius: 3px 0 0 3px;
+  padding: 12px 8px;
+  width: 34px;
+  flex: none;
+  transition: width 0.25s cubic-bezier(0.22, 0.8, 0.24, 1),
+              opacity 0.25s ease, filter 0.2s ease;
+}
+/* 第一章 = 黑底白字（深色贴面 + 浅色描边使其从黑背景中分离） */
+.tg-group button.tab-bw { background: #0C0B09; color: #E6E0D4; border-color: rgba(230, 224, 212, 0.3); }
+/* 第二章 = 橘棕(红)底白字 */
+.tg-group button.tab-cn { background: var(--tab-cn); color: #F8F2E7; border-color: rgba(0, 0, 0, 0.3); }
+/* 第三章 = 白底黑字 */
+.tg-group button.tab-rv { background: #E6E0D4; color: #141210; border-color: rgba(0, 0, 0, 0.25); }
+
+/* 章节分组间距：3 + 2 + 3 之间的层级 */
+.tg-group button.chapter-end { margin-bottom: 14px; }
+
+/* hover：贴面微亮，不位移 */
+.tg-group button:hover { filter: brightness(1.14); }
+
+/* 选中：向左伸出更长 + 字重加强（明确的当前状态） */
+.tg-group button.active {
+  width: 46px;
+  font-weight: 600;
+}
+
+/* 有选中项时：非当前章节的索引贴压暗（层级关系，仍可点击） */
+.tg-group button.dim { opacity: 0.34; }
+.tg-group button.dim:hover { opacity: 0.65; }
+
+/* ---------------- 响应式：三栏 → 上下堆叠 ---------------- */
+@media (max-width: 1000px) {
+  .org-details { min-width: 170px; }
+}
+@media (max-width: 760px) {
+  #organize { flex-direction: column; height: auto; }
+  .org-main { order: 1; }
+  .org-area { height: 58vh; flex: none; }
+  .org-tags {
+    order: 2;
+    width: 100%;
+    align-self: auto;
+    border-top: 1px solid var(--line);
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 10px 14px;
+  }
+  .tg-group button {
+    writing-mode: horizontal-tb;
+    border-right: 1px solid;            /* 恢复右侧描边（颜色随章节类） */
+    border-radius: 3px 3px 0 0;
+    padding: 6px 12px;
+    width: auto;
+    max-height: none;
+    white-space: nowrap;
+  }
+  .tg-group button.chapter-end { margin-bottom: 0; margin-right: 12px; }
+  .tg-group button.active { width: auto; }
+  .org-details {
+    order: 3;
+    width: 100%;
+    border-right: none;
+    border-top: 1px solid var(--line);
+  }
+  .org-hint { display: none; }
+  .lens { width: 132px; height: 132px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opin { transition: none; }
 }

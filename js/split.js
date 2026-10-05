@@ -110,6 +110,8 @@ DR.split = (function () {
     meta.appendChild(metaLine("SOURCE / 出处", e.source));
     meta.appendChild(metaLine("YEAR / 年代", e.year));
     var tags = [];
+    if (e.exChapterInfo) tags.push(e.exChapterInfo.no + " · " + e.exChapterInfo.zh);
+    if (e.exSubInfo) tags.push(e.exSubInfo.no + "｜" + e.exSubInfo.zh);
     if (e.media) tags.push(e.media + " · " + (MEDIA_ZH[e.media] || ""));
     if (e.darkroomAs) tags.push(e.darkroomAs + " · " + (AS_ZH[e.darkroomAs] || ""));
     (e.tags || []).forEach(function (t) { tags.push("#" + t); });

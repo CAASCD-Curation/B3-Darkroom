@@ -30,6 +30,8 @@ const MIME = {
   ".webp": "image/webp", ".avif": "image/avif", ".gif": "image/gif",
   ".svg": "image/svg+xml", ".pdf": "application/pdf",
   ".ico": "image/x-icon",
+  ".ttf": "font/ttf", ".otf": "font/otf",
+  ".woff": "font/woff", ".woff2": "font/woff2",
 };
 
 http.createServer(async (req, res) => {
@@ -39,7 +41,10 @@ http.createServer(async (req, res) => {
     const file = normalize(join(root, path));
     if (file !== root && !file.startsWith(root + sep)) { res.writeHead(403); res.end(); return; }
     const body = await readFile(file);
-    res.writeHead(200, { "Content-Type": MIME[extname(file).toLowerCase()] || "application/octet-stream" });
+    res.writeHead(200, {
+      "Content-Type": MIME[extname(file).toLowerCase()] || "application/octet-stream",
+      "Cache-Control": "no-cache",
+    });
     res.end(body);
   } catch {
     res.writeHead(404); res.end("Not Found");

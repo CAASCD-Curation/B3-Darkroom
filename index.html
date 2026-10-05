@@ -8,13 +8,59 @@
 </head>
 <body>
 
+<!-- ============ 开屏 LANDING：黑场 + 红色 DARKROOM 剪切蒙版标题（点击任意处进入） ============ -->
+<div id="landing" role="button" tabindex="0" aria-label="进入暗房照片墙">
+  <header class="land-top">
+    <span>策展超市 2.0</span>
+    <span>VISUAL RESEARCH DATABASE</span>
+    <span>CAASCD CURATION</span>
+  </header>
+
+  <div class="land-title">
+    <svg viewBox="0 0 1200 430" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <clipPath id="drClip">
+          <text x="600" y="368" text-anchor="middle"
+                textLength="1150" lengthAdjust="spacingAndGlyphs">DARKROOM</text>
+        </clipPath>
+      </defs>
+      <g clip-path="url(#drClip)">
+        <rect width="1200" height="430" class="dr-base"/>
+        <image class="dr-img" id="drImgA" href="images/A/A-01.png"
+               x="0" y="0" width="1200" height="430" preserveAspectRatio="xMidYMid slice"/>
+        <image class="dr-img dr-off" id="drImgB" href="images/C/C-34.jpg"
+               x="0" y="0" width="1200" height="430" preserveAspectRatio="xMidYMid slice"/>
+      </g>
+    </svg>
+  </div>
+
+  <footer class="land-info">
+    <span class="land-year">20</span>
+    <p class="land-note">A visual research database organized by MEDIA and DARKROOM-AS — archiving images that watch without being seen, and the rooms in which they are developed.</p>
+    <span class="land-mark">◉</span>
+    <p class="land-note">「暗房」视觉研究数据库：以「媒介」与「暗房功能」两个维度，收录那些观看而不被看见的图像，以及图像被显影的房间。</p>
+    <span class="land-year">26</span>
+  </footer>
+
+  <figure class="land-strip">
+    <img src="images/C/C-34.jpg" alt="">
+  </figure>
+
+  <div class="land-hint">CLICK ANYWHERE TO ENTER · 点击任意处进入</div>
+</div>
+
 <!-- ============ 顶部：品牌 + 计数 + SAFELIGHT（MEDIA 顶部导航已移除，
      media 字段保留于数据层，用于筛选逻辑与标签显示） ============ -->
 <header id="topbar">
   <div class="top-row">
-    <div class="brand">
+    <div class="brand" id="brandHome" role="button" tabindex="0" title="返回开屏首页">
       <h1>暗房 <span class="en">DARKROOM</span></h1>
       <span class="sub">VISUAL RESEARCH DATABASE · V2</span>
+    </div>
+    <div class="mode-switch" role="tablist" aria-label="观看模式切换">
+      <button id="modeWall" type="button" class="active" role="tab" aria-selected="true">PHOTO WALL</button>
+      <span class="sep">/</span>
+      <button id="modeOrganize" type="button" role="tab" aria-selected="false">ORGANIZE</button>
     </div>
     <div class="counter" id="counter">—</div>
     <button id="safelightBtn" type="button" aria-pressed="false"><span class="dot">○</span> SAFELIGHT</button>
@@ -22,12 +68,6 @@
 </header>
 
 <div id="layout">
-  <!-- ============ 左侧：DARKROOM AS ? 二级筛选 ============ -->
-  <aside id="sidebar" aria-label="DARKROOM AS 筛选">
-    <div class="side-title">DARKROOM<br>AS&nbsp;?</div>
-    <nav id="asBar"></nav>
-  </aside>
-
   <!-- ============ 中央：IMAGE WALL（二分模式下 = DARKROOM / INDEX） ============ -->
   <main id="wall" aria-label="照片墙"></main>
 
@@ -43,6 +83,40 @@
     <div id="lightGrid" class="light-grid" data-band="title"></div>
   </section>
 </div>
+
+<!-- ============ MODE 02：TAG / ORGANIZE（标签筛选 + 自由排列 + 放大镜） ============ -->
+<section id="organize" aria-label="TAG / ORGANIZE 观看模式" hidden>
+
+  <!-- 左：DETAILS 当前选中词条内容 -->
+  <aside class="org-details" aria-label="当前词条内容">
+    <div class="org-d-head">DETAILS</div>
+    <div class="org-d-empty" id="orgDEmpty">SELECT A PHOTO<br><span>点击中央照片查看词条</span></div>
+    <div class="org-d-body" id="orgDBody" hidden>
+      <dl>
+        <div><dt>ID</dt><dd data-f="id"></dd></div>
+        <div><dt>TITLE / 词条</dt><dd data-f="title"></dd></div>
+        <div><dt>SOURCE / 出处</dt><dd data-f="source"></dd></div>
+        <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
+        <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
+        <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
+      </dl>
+    </div>
+  </aside>
+
+  <!-- 中：控制 + 自由排列照片区域 -->
+  <div class="org-main">
+    <div class="org-controls">
+      <button id="orgShuffle" type="button">SHUFFLE</button>
+      <button id="orgOrganize" type="button" aria-pressed="false">ORGANIZE</button>
+      <span class="org-count" id="orgCount"></span>
+      <span class="org-hint">DRAG TO ARRANGE · 可拖动照片</span>
+    </div>
+    <div class="org-area" id="orgArea"></div>
+  </div>
+
+  <!-- 右：TAGS 标签筛选 -->
+  <aside class="org-tags" id="orgTags" aria-label="标签筛选"></aside>
+</section>
 
 <!-- ============ 详情卡片：从原照片展开 / 显影 ============ -->
 <div id="detail" hidden role="dialog" aria-modal="true">
@@ -74,12 +148,14 @@
 </div>
 
 <script src="data/database.js"></script>
+<script src="js/chapters.js"></script>
 <script src="js/app.js"></script>
 <script src="js/filterbar.js"></script>
-<script src="js/sidebar.js"></script>
 <script src="js/imagewall.js"></script>
 <script src="js/split.js"></script>
 <script src="js/detail.js"></script>
+<script src="js/organize.js"></script>
+<script src="js/landing.js"></script>
 <script>DR.init();</script>
 </body>
 </html>
