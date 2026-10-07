@@ -10,15 +10,20 @@
   --red: #E40D14;             /* 全站唯一强调红：标题 / 按钮 / 交互 / 双色调显影 */
   --red-dim: #E40D14;         /* 与 --red 保持一致，不再使用第二种红色 */
   --line: rgba(230, 224, 212, 0.13);
-  /* 英文标题：窄体无衬线（摄影出版物 / 索引系统感） */
-  --font-condensed: "Helvetica Neue Condensed", "Arial Narrow",
-                    "Roboto Condensed", "Liberation Sans Narrow", sans-serif;
-  /* 正文：英文优先 Helvetica，中文回落思源黑体 */
-  --font: "Helvetica Neue", Helvetica, Arial,
+  /* 英文（导航 / 按钮 / 标签 / 分类 / 编号 / 标题 / 辅助信息）：Regio Mono，中文回落思源黑体 */
+  --font-condensed: "Regio Mono", "Arial Narrow",
+                    "Roboto Condensed", "Liberation Sans Narrow",
+                    "Source Han Sans SC", "Noto Sans SC", sans-serif;
+  --font: "Regio Mono",
           "Source Han Sans SC", "Source Han Sans CN", "Noto Sans SC", "Noto Sans CJK SC",
           "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   /* 编号 / 元数据：等宽（档案编号、数据库记录感） */
-  --mono: "SFMono-Regular", "Courier New", monospace;
+  --mono: "Regio Mono", "Source Han Sans SC", "Noto Sans SC", "Courier New", monospace;
+  /* 详情正文区域专用：保持原字体（不受 Regio Mono 全局化影响） */
+  --font-detail: "Helvetica Neue", Helvetica, Arial,
+          "Source Han Sans SC", "Source Han Sans CN", "Noto Sans SC", "Noto Sans CJK SC",
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --mono-detail: "SFMono-Regular", "Courier New", monospace;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -659,7 +664,7 @@ body.split #light {
   color: var(--red);
   margin-bottom: 3px;
 }
-.detail-info dd { font-size: 13px; line-height: 1.7; color: var(--ink); word-break: break-word; }
+.detail-info dd { font-family: var(--font-detail); font-size: 13px; line-height: 1.7; color: var(--ink); word-break: break-word; }
 .detail-info dd.dim { color: var(--ink-dim); }
 .detail-info a { color: var(--ink); text-underline-offset: 3px; }
 
@@ -671,6 +676,12 @@ body.split #light {
 .detail-info dd[data-f="year"] { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-dim); }
 .detail-info dd[data-f="title"] { font-size: 17px; font-weight: 600; line-height: 1.5; }
 .detail-info dd[data-f="description"] { font-size: 12px; color: var(--ink); opacity: 0.85; }
+
+/* 例外区域：详情正文区域整体保持原字体（Helvetica Neue / SFMono），不切换 Regio Mono。
+   置于此处以覆盖上面的 var(--mono) 规则 */
+.detail-info dt,
+.detail-info dd[data-f="id"],
+.detail-info dd[data-f="year"] { font-family: var(--mono-detail); }
 
 /* 上一条 / 下一条：悬浮于卡片左右两端 */
 .detail-side {
@@ -740,6 +751,15 @@ body.split #light {
 @font-face {
   font-family: "Anton";
   src: url("../fonts/Anton-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 全站英文主字体：Regio Mono（开屏 DARKROOM 蒙版与详情正文区域除外） */
+@font-face {
+  font-family: "Regio Mono";
+  src: url("../fonts/regio-mono-regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -816,7 +836,7 @@ body.landing-open { overflow: hidden; }   /* 开屏期间锁定底层滚动 */
   padding: 8px 0 14px;
 }
 .land-year {
-  font-family: "Anton", var(--font-condensed);
+  font-family: var(--font-condensed);   /* 非蒙版文字 → 统一 Regio Mono */
   font-size: 46px;
   line-height: 1;
   color: var(--red);
@@ -940,7 +960,7 @@ body.mode-organize #safelightBtn { display: none; }
   color: var(--ink-dim);
   margin-bottom: 4px;
 }
-.org-d-body dd { font-size: 12.5px; line-height: 1.7; color: var(--ink); word-break: break-word; }
+.org-d-body dd { font-family: var(--font-detail); font-size: 12.5px; line-height: 1.7; color: var(--ink); word-break: break-word; }
 .org-d-body dd.dim { color: var(--ink-dim); }
 .org-d-body .tag { font-size: 10.5px; color: var(--ink-dim); margin-right: 9px; white-space: nowrap; }
 .org-d-body .tag.cat { color: var(--ink); }
@@ -948,6 +968,11 @@ body.mode-organize #safelightBtn { display: none; }
 .org-d-body dd[data-f="year"] { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-dim); }
 .org-d-body dd[data-f="title"] { font-size: 16px; font-weight: 600; line-height: 1.5; }
 .org-d-body dd[data-f="description"] { font-size: 11.5px; opacity: 0.85; }
+
+/* 例外区域（同上）：ORGANIZE 详情正文保持原字体（dt 原本继承正文 Helvetica，id/year 原本为 SFMono） */
+.org-d-body dt { font-family: var(--font-detail); }
+.org-d-body dd[data-f="id"],
+.org-d-body dd[data-f="year"] { font-family: var(--mono-detail); }
 
 /* ---------------- 中：控制行 + 自由排列区域 ---------------- */
 .org-main {
