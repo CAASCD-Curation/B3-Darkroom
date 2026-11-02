@@ -39,6 +39,28 @@ DR.spatial = (function () {
 
   function buildingCount(building) { return entriesFor(building, null).length; }
 
+  /* 固定视口内等比适配图纸；热区与线稿属于同一元素，因此始终同步缩放。 */
+  var fitFrame = null;
+  function fitOneDrawing(el, viewBox) {
+    if (!el || !el.parentElement) return;
+    var availableW = el.parentElement.clientWidth;
+    var availableH = el.parentElement.clientHeight;
+    if (availableW <= 0 || availableH <= 0) return;
+    var scale = Math.min(availableW / viewBox[0], availableH / viewBox[1]);
+    el.style.width = Math.max(1, Math.floor(viewBox[0] * scale * 1000) / 1000) + "px";
+    el.style.height = Math.max(1, Math.floor(viewBox[1] * scale * 1000) / 1000) + "px";
+  }
+  function fitFixedDrawings() {
+    fitOneDrawing(root.querySelector(".spatial-main-map"), model.map.viewBox);
+    if (currentBuilding) {
+      fitOneDrawing(root.querySelector(".spatial-section-lines"), currentBuilding.sectionViewBox);
+    }
+  }
+  function scheduleFit() {
+    if (fitFrame) cancelAnimationFrame(fitFrame);
+    fitFrame = requestAnimationFrame(fitFixedDrawings);
+  }
+
   /* 同一份灰度线稿叠两层：选中多边形内的上层反色 = 黑底白线。 */
   function drawing(opts) {
     var html = '<div class="spatial-drawing ' + esc(opts.className || "") +
@@ -112,6 +134,7 @@ DR.spatial = (function () {
     html += '</div></div>';
     root.innerHTML = html;
     setCounter('<b>3</b> BUILDINGS · <b>8</b> FLOORS · <b>' + total + '</b> ENTRIES');
+    scheduleFit();
   }
 
   function floorNav(building, floor) {
@@ -161,6 +184,7 @@ DR.spatial = (function () {
     root.innerHTML = html;
     DR.wall.renderInto(document.getElementById("spatialWall"), currentList);
     setCounter('<b>' + currentList.length + '</b> ENTRIES · ' + esc(b.id) + (f ? " / " + esc(f.label) : ""));
+    scheduleFit();
   }
 
   function openBuilding(id) {
@@ -210,13 +234,17 @@ DR.spatial = (function () {
       target.click();
     });
     window.addEventListener("resize", function () {
-      if (DR.state.mode !== "spatial" || !currentBuilding) return;
+      if (DR.state.mode !== "spatial") return;
+      scheduleFit();
+      if (!currentBuilding) return;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(function () {
         var wall = document.getElementById("spatialWall");
         if (wall) DR.wall.renderInto(wall, currentList);
       }, 180);
     });
+    if (window.ResizeObserver) new ResizeObserver(scheduleFit).observe(root);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleFit);
   }
 
   return {

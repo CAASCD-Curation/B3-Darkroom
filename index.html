@@ -8,45 +8,39 @@
 </head>
 <body>
 
-<!-- ============ 开屏 LANDING：黑场 + 红色 DARKROOM 剪切蒙版标题（点击任意处进入） ============ -->
-<div id="landing" role="button" tabindex="0" aria-label="进入暗房照片墙">
-  <header class="land-top">
-    <span>策展超市 2.0</span>
-    <span>VISUAL RESEARCH DATABASE</span>
-    <span>CAASCD CURATION</span>
-  </header>
-
-  <div class="land-title">
-    <svg viewBox="0 0 1200 430" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <defs>
-        <clipPath id="drClip">
-          <text x="600" y="368" text-anchor="middle"
-                textLength="1150" lengthAdjust="spacingAndGlyphs">DARKROOM</text>
-        </clipPath>
-      </defs>
-      <g clip-path="url(#drClip)">
-        <rect width="1200" height="430" class="dr-base"/>
-        <image class="dr-img" id="drImgA" href="images/A/A-01.png"
-               x="0" y="0" width="1200" height="430" preserveAspectRatio="xMidYMid slice"/>
-        <image class="dr-img dr-off" id="drImgB" href="images/C/C-34.jpg"
-               x="0" y="0" width="1200" height="430" preserveAspectRatio="xMidYMid slice"/>
-      </g>
+<!-- ============ 开屏 LANDING：一室万象 / ONE ROOM, ENDLESS VISIONS ============ -->
+<div id="landing" role="button" tabindex="0" aria-label="一室万象，点击进入暗房视觉研究数据库">
+  <div class="land-stage" aria-hidden="true">
+    <svg class="land-cross" viewBox="0 0 1600 900" preserveAspectRatio="none">
+      <line class="land-cross-a" x1="0" y1="0" x2="1600" y2="900" pathLength="1"/>
+      <line class="land-cross-b" x1="0" y1="900" x2="1600" y2="0" pathLength="1"/>
     </svg>
+
+    <header class="land-top">
+      <span class="land-type land-top-left">策展超市 2.0</span>
+      <span class="land-type land-top-center">B3 — 暗房</span>
+      <span class="land-type land-top-right">CAASCD CURATION</span>
+    </header>
+
+    <div class="land-box" style="--x:1.7778%;--box-delay:.46s;--glyph-delay:1.18s">
+      <svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" pathLength="1"/></svg>
+      <span class="land-glyph">一</span>
+    </div>
+    <div class="land-box" style="--x:33.1667%;--box-delay:.60s;--glyph-delay:1.32s">
+      <svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" pathLength="1"/></svg>
+      <span class="land-glyph">室</span>
+    </div>
+    <div class="land-box" style="--x:61.2778%;--box-delay:.74s;--glyph-delay:1.46s">
+      <svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" pathLength="1"/></svg>
+      <span class="land-glyph">万</span>
+    </div>
+    <div class="land-box" style="--x:92.6667%;--box-delay:.88s;--glyph-delay:1.60s">
+      <svg viewBox="0 0 100 100"><rect x="2" y="2" width="96" height="96" pathLength="1"/></svg>
+      <span class="land-glyph">象</span>
+    </div>
+
+    <div class="land-english">ONE ROOM, ENDLESS VISIONS</div>
   </div>
-
-  <footer class="land-info">
-    <span class="land-year">20</span>
-    <p class="land-note">A visual research database organized by MEDIA and DARKROOM-AS — archiving images that watch without being seen, and the rooms in which they are developed.</p>
-    <span class="land-mark">◉</span>
-    <p class="land-note">「暗房」视觉研究数据库：以「媒介」与「暗房功能」两个维度，收录那些观看而不被看见的图像，以及图像被显影的房间。</p>
-    <span class="land-year">26</span>
-  </footer>
-
-  <figure class="land-strip">
-    <img src="images/C/C-34.jpg" alt="">
-  </figure>
-
-  <div class="land-hint">CLICK ANYWHERE TO ENTER · 点击任意处进入</div>
 </div>
 
 <!-- ============ 顶部：品牌 + 计数 + SAFELIGHT（MEDIA 顶部导航已移除，

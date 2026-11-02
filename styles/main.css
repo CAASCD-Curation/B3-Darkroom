@@ -771,125 +771,113 @@ body.landing-open { overflow: hidden; }   /* 开屏期间锁定底层滚动 */
   position: fixed;
   inset: 0;
   z-index: 90;
-  background: #0D0C0A;
-  display: flex;
-  flex-direction: column;
-  padding: 24px 4vw 16px;
+  overflow: hidden;
+  background: #111111;
   cursor: pointer;
   opacity: 1;
   transition: opacity 0.6s ease;
 }
 #landing.leaving { opacity: 0; pointer-events: none; }
-#landing.gone { display: none; }          /* 已进入照片墙：开屏保留在 DOM 中，可随时返回 */
+#landing.gone { display: none; }
+.land-stage { position: absolute; inset: 0; }
 
-/* 细颗粒：静态噪点层（非动画），呼应海报印刷质感 */
-#landing::after {
-  content: "";
+/* 两条直线始终贯穿画面四角，不做辉光、拖尾或弯曲。 */
+.land-cross { position: absolute; inset: 0; width: 100%; height: 100%; }
+.land-cross line {
+  fill: none;
+  stroke: #F5F5F2;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: landLineDraw 1.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+.land-cross .land-cross-b { animation-delay: 0.08s; }
+
+/* 顶部三组文字：位置与参考图一致，使用遮罩 steps 实现轻快打字。 */
+.land-top { position: absolute; inset: 0; color: var(--red); }
+.land-top span {
+  position: absolute;
+  top: 3.35%;
+  font-family: var(--font-condensed);
+  font-size: 1.6667vw;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
+  animation: landType 0.68s steps(9, end) 0.22s forwards;
+}
+.land-top-left { left: 1.7778%; }
+.land-top-center { left: 50%; transform: translateX(-50%); }
+.land-top-right { right: 1.7778%; }
+
+/* 四个独立方框：viewport 百分比定位，宽高始终相等。 */
+.land-box {
+  position: absolute;
+  left: var(--x);
+  top: 74.0375%;
+  width: 5.5556vw;
+  aspect-ratio: 1;
+  color: #F5F5F2;
+}
+.land-box svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.land-box rect {
+  fill: none;
+  stroke: #F5F5F2;
+  stroke-width: 3;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: landBoxDraw 0.48s cubic-bezier(0.65, 0, 0.35, 1) var(--box-delay) forwards;
+}
+.land-glyph {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  opacity: 0.12;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="240" height="240" filter="url(%23n)" opacity="0.6"/></svg>');
-}
-
-/* 顶部三栏小字（左 / 中 / 右） */
-.land-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  font-family: var(--font-condensed);
-  font-size: 13px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-/* 中央巨型标题：SVG 剪切蒙版，图片被限制在 DARKROOM 字形内部 */
-.land-title {
-  flex: 1;
-  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.land-title svg { width: 100%; height: auto; max-height: 100%; display: block; }
-.land-title text {
-  font-family: "Anton", var(--font-condensed);
-  font-size: 420px;
-}
-.dr-base { fill: var(--red); }
-/* multiply 混合：图片高光显红、暗部显黑 → 字形内呈海报式黑红双色调 */
-.dr-img {
-  filter: grayscale(1) contrast(1.12);
-  mix-blend-mode: multiply;
-  transition: opacity 1.6s ease;
-}
-.dr-img.dr-off { opacity: 0; }
-
-/* 底部信息行：红 20 / 两段小字 / 中央符号 / 红 26 */
-.land-info {
-  display: grid;
-  grid-template-columns: auto 1fr auto 1fr auto;
-  align-items: center;
-  gap: 3vw;
-  padding: 8px 0 14px;
-}
-.land-year {
-  font-family: var(--font-condensed);   /* 非蒙版文字 → 统一 Regio Mono */
-  font-size: 46px;
+  font-family: var(--font);
+  font-size: 3.9vw;
+  font-weight: 600;
   line-height: 1;
+  clip-path: inset(100% 0 0 0);
+  animation: landGlyphReveal 0.44s cubic-bezier(0.65, 0, 0.35, 1) var(--glyph-delay) forwards;
+}
+
+/* 底部英文保持原始居中位置，与首个汉字的显现动画同时开始。 */
+.land-english {
+  position: absolute;
+  left: 50%;
+  top: 91.85%;
+  transform: translateX(-50%);
   color: var(--red);
-}
-.land-note {
-  font-size: 10px;
-  line-height: 1.65;
-  letter-spacing: 0.04em;
-  color: var(--ink);
-}
-.land-mark { font-size: 18px; color: var(--ink); }
-
-/* 底部图片条：黑红双色调 + 细边框 */
-.land-strip {
-  height: 20vh;
-  min-height: 100px;
-  border: 1px solid var(--line);
-  background: var(--red);
-  overflow: hidden;
-}
-.land-strip img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: grayscale(1) contrast(1.12);
-  mix-blend-mode: multiply;
-}
-
-/* 进入提示 */
-.land-hint {
-  margin-top: 12px;
-  text-align: center;
   font-family: var(--font-condensed);
-  font-size: 9px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
+  font-size: 2.5vw;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
+  animation: landType 1.15s steps(24, end) 1.18s forwards;
 }
 
-/* 移动端：压缩信息行与图片条，保持标题为绝对主体 */
-@media (max-width: 760px) {
-  #landing { padding: 16px 14px 12px; }
-  .land-top { font-size: 9px; letter-spacing: 0.1em; }
-  .land-info { grid-template-columns: auto 1fr auto; padding: 6px 0 10px; }
-  .land-note { display: none; }
-  .land-mark { justify-self: center; }
-  .land-year { font-size: 30px; }
-  .land-strip { height: 15vh; min-height: 72px; }
-}
+@keyframes landLineDraw { to { stroke-dashoffset: 0; } }
+@keyframes landBoxDraw { to { stroke-dashoffset: 0; } }
+@keyframes landGlyphReveal { to { clip-path: inset(0 0 0 0); } }
+@keyframes landType { to { clip-path: inset(0 0 0 0); } }
 
 @media (prefers-reduced-motion: reduce) {
-  #landing, .dr-img { transition: none; }
+  #landing { transition: none; }
+  .land-cross line,
+  .land-box rect,
+  .land-glyph,
+  .land-top span,
+  .land-english { animation: none; }
+  .land-cross line,
+  .land-box rect { stroke-dashoffset: 0; }
+  .land-glyph,
+  .land-top span,
+  .land-english { clip-path: inset(0 0 0 0); }
 }
 
 /* ============================================================
@@ -1225,8 +1213,15 @@ body.mode-spatial .mode-switch button.active { color: #111111; }
 body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
 
 #spatial { min-height: calc(100vh - var(--topbar-h, 62px)); background: #FFFFFF; color: #111111; }
+#spatial[data-view="overview"] {
+  height: calc(100vh - var(--topbar-h, 62px));
+  height: calc(100dvh - var(--topbar-h, 62px));
+  min-height: 0;
+  overflow: hidden;
+}
 #spatial[hidden] { display: none; }
 #spatialRoot { min-height: inherit; }
+#spatial[data-view="overview"] #spatialRoot { height: 100%; min-height: 0; }
 #spatial button { border-radius: 0; }
 .spatial-kicker {
   font-family: var(--mono);
@@ -1237,8 +1232,16 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   text-transform: uppercase;
 }
 
-/* 第一层：轴测总地图 */
-.spatial-overview { max-width: 1500px; margin: 0 auto; padding: 34px 34px 54px; }
+/* 第一层：轴测总地图完整放入固定视口，中间图纸占据剩余空间。 */
+.spatial-overview {
+  height: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 34px 34px 54px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
 .spatial-overview-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
 .spatial-overview-head h2 {
   margin-top: 12px;
@@ -1249,7 +1252,17 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   line-height: 1.04;
 }
 .spatial-intro { max-width: 350px; font-size: 12px; line-height: 1.9; color: #666666; }
-.spatial-overview-map { max-width: 1280px; margin: 8px auto 0; }
+.spatial-overview-map {
+  width: 100%;
+  max-width: 1280px;
+  min-height: 0;
+  margin: 8px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.spatial-main-map { flex: none; }
 .spatial-building-index { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #111111; border-left: 1px solid #111111; }
 .spatial-building-card {
   min-width: 0;
@@ -1300,13 +1313,19 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   position: sticky;
   top: var(--topbar-h, 62px);
   height: calc(100vh - var(--topbar-h, 62px));
+  height: calc(100dvh - var(--topbar-h, 62px));
   min-width: 0;
-  overflow-y: auto;
+  overflow: hidden;
   border-right: 1px solid #111111;
   background: #FFFFFF;
-  scrollbar-width: thin;
 }
-.spatial-section-inner { padding: 18px 24px 26px; }
+.spatial-section-inner {
+  height: 100%;
+  padding: 18px 24px 26px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 .spatial-back {
   display: block;
   margin-bottom: 24px;
@@ -1318,9 +1337,10 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   color: #555555;
 }
 .spatial-back:hover { color: #000000; }
+.spatial-section-head { flex: none; }
 .spatial-section-head h2 { margin-top: 7px; font-size: 34px; font-weight: 500; letter-spacing: 0.08em; line-height: 1.2; }
 .spatial-subtitle { margin-top: 7px; font-size: 11px; line-height: 1.6; color: #666666; }
-.spatial-floor-nav { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; border-top: 1px solid #111111; border-left: 1px solid #111111; }
+.spatial-floor-nav { flex: none; display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; border-top: 1px solid #111111; border-left: 1px solid #111111; }
 .spatial-floor-nav button {
   min-width: 0;
   display: flex;
@@ -1340,8 +1360,19 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
 .spatial-floor-nav button.active { background: #111111; color: #FFFFFF; }
 .spatial-floor-nav button:hover b,
 .spatial-floor-nav button.active b { color: #FFFFFF; }
-.spatial-section-drawing { max-width: 590px; margin: 18px auto 0; }
-.spatial-drawing-note { margin-top: 10px; font-family: var(--mono); font-size: 7px; letter-spacing: 0.12em; color: #777777; text-align: center; }
+.spatial-section-drawing {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 590px;
+  min-height: 0;
+  margin: 18px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.spatial-section-lines { flex: none; }
+.spatial-drawing-note { flex: none; margin-top: 10px; font-family: var(--mono); font-size: 7px; letter-spacing: 0.12em; color: #777777; text-align: center; }
 
 /* 右上角持续可见、持续可操作的迷你总地图 */
 .spatial-minimap {
@@ -1402,7 +1433,17 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   .spatial-building-index { grid-template-columns: 1fr; }
   .spatial-building-card { min-height: 120px; }
   .spatial-building-layout { display: block; }
-  .spatial-section-pane { position: relative; top: auto; width: 100%; height: auto; max-height: none; overflow: visible; border-right: none; border-bottom: 1px solid #111111; }
+  .spatial-section-pane {
+    position: relative;
+    top: auto;
+    width: 100%;
+    height: calc(100vh - var(--topbar-h, 62px));
+    height: calc(100dvh - var(--topbar-h, 62px));
+    max-height: none;
+    overflow: hidden;
+    border-right: none;
+    border-bottom: 1px solid #111111;
+  }
   .spatial-section-drawing { max-width: 520px; }
   .spatial-exhibits { padding: 20px 16px 44px; }
   .spatial-minimap { top: calc(var(--topbar-h, 62px) + 10px); right: 10px; width: 190px; }
@@ -1416,5 +1457,19 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   .spatial-minimap { width: 174px; }
   .spatial-mini-head > span { display: none; }
   .spatial-mini-head { justify-content: flex-end; }
+}
+
+/* 较矮窗口仍保留完整图纸，只压缩辅助区域的间距与控件高度。 */
+@media (max-height: 680px) {
+  .spatial-overview { padding-top: 14px; padding-bottom: 14px; }
+  .spatial-overview-head h2 { margin-top: 6px; font-size: clamp(22px, 3vw, 32px); }
+  .spatial-intro { line-height: 1.5; }
+  .spatial-building-card { min-height: 0; padding: 10px; gap: 4px 10px; }
+  .spatial-section-inner { padding-top: 12px; padding-bottom: 12px; }
+  .spatial-back { margin-bottom: 10px; }
+  .spatial-section-head h2 { font-size: 26px; }
+  .spatial-floor-nav { margin-top: 10px; }
+  .spatial-floor-nav button { padding: 6px 8px; }
+  .spatial-section-drawing { margin-top: 8px; }
 }
 
