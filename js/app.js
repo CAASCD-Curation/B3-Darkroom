@@ -63,27 +63,39 @@ window.DR = (function () {
     window.scrollTo(0, 0);
   }
 
-  /* 观看模式切换：PHOTO WALL ↔ ORGANIZE，不重新加载页面 */
+  /* 观看模式切换：PHOTO WALL / ORGANIZE / SPATIAL，不重新加载页面 */
   function setMode(mode) {
     if (state.mode === mode) return;
     state.mode = mode;
+    var isWall = mode === "wall";
     var isOrg = mode === "organize";
+    var isSpatial = mode === "spatial";
     document.body.classList.toggle("mode-organize", isOrg);
-    document.getElementById("modeWall").classList.toggle("active", !isOrg);
-    document.getElementById("modeWall").setAttribute("aria-selected", String(!isOrg));
-    document.getElementById("modeOrganize").classList.toggle("active", isOrg);
-    document.getElementById("modeOrganize").setAttribute("aria-selected", String(isOrg));
+    document.body.classList.toggle("mode-spatial", isSpatial);
+    [
+      ["modeWall", isWall],
+      ["modeOrganize", isOrg],
+      ["modeSpatial", isSpatial]
+    ].forEach(function (item) {
+      var button = document.getElementById(item[0]);
+      button.classList.toggle("active", item[1]);
+      button.setAttribute("aria-selected", String(item[1]));
+    });
+    document.getElementById("layout").hidden = !isWall;
     document.getElementById("organize").hidden = !isOrg;
-    if (isOrg) {
-      /* SAFELIGHT 二分是照片墙模式专属：进入 ORGANIZE 前关闭 */
-      if (DR.split && DR.split.active()) document.getElementById("safelightBtn").click();
+    document.getElementById("spatial").hidden = !isSpatial;
+    if (!isWall && DR.split && DR.split.active()) document.getElementById("safelightBtn").click();
+    if (!isSpatial && DR.spatial) { DR.spatial.leave(); DR.navList = null; }
+    if (isSpatial) {
+      DR.organize.leave();
+      DR.spatial.enter(); /* 每次进入空间导航首先显示三栋楼总览 */
+    } else if (isOrg) {
       DR.organize.render();
-      window.scrollTo(0, 0);
     } else {
       DR.organize.leave();
       render(); /* 回到照片墙：恢复墙面与计数 */
-      window.scrollTo(0, 0);
     }
+    window.scrollTo(0, 0);
   }
 
   function init() {
@@ -92,8 +104,10 @@ window.DR = (function () {
     DR.split.init();
     DR.detail.init();
     DR.organize.init();
+    DR.spatial.init();
     document.getElementById("modeWall").addEventListener("click", function () { setMode("wall"); });
     document.getElementById("modeOrganize").addEventListener("click", function () { setMode("organize"); });
+    document.getElementById("modeSpatial").addEventListener("click", function () { setMode("spatial"); });
     render();
   }
 

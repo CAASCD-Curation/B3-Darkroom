@@ -80,8 +80,8 @@ DR.wall = (function () {
   }
 
   /* 有控制的随机：行式基线 + 逐张抖动，轻微重叠，行列不完全对齐 */
-  function layout(list) {
-    var W = wall.clientWidth - 24;
+  function layout(container, list) {
+    var W = container.clientWidth - 24;
     if (W < 200) W = 200;
     var target = clamp(W * 0.095, 72, 160);   /* 每张约占视口宽 8–15% */
     var margin = 12;
@@ -117,25 +117,29 @@ DR.wall = (function () {
       x += w * (0.88 + rnd(e.id, 9) * 0.24);             /* 间距不完全一致，部分重叠 */
     });
 
-    wall.style.height = (y + rowMaxH + 40) + "px";
+    container.style.height = (y + rowMaxH + 40) + "px";
     return items;
   }
 
-  function render() {
-    var list = DR.filtered();
-    wall.innerHTML = "";
+  /* 同一套布局与详情交互可渲染到原照片墙或 SPATIAL 的右侧容器。 */
+  function renderInto(container, list) {
+    container.innerHTML = "";
     if (!list.length) {
       var p = document.createElement("p");
       p.className = "wall-empty";
       p.textContent = "NO ENTRIES / 没有匹配的词条";
-      wall.appendChild(p);
-      wall.style.height = "40vh";
+      container.appendChild(p);
+      container.style.height = "40vh";
       return;
     }
-    var items = layout(list);
+    var items = layout(container, list);
     var frag = document.createDocumentFragment();
     items.forEach(function (it) { frag.appendChild(buildItem(it.e, it)); });
-    wall.appendChild(frag);
+    container.appendChild(frag);
+  }
+
+  function render() {
+    renderInto(wall, DR.filtered());
     /* 重排后恢复二分模式的选中高亮 */
     if (DR.split) DR.split.afterWallRender();
   }
@@ -149,5 +153,5 @@ DR.wall = (function () {
     });
   }
 
-  return { init: init, render: render };
+  return { init: init, render: render, renderInto: renderInto };
 })();

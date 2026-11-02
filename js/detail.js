@@ -18,10 +18,18 @@ DR.detail = (function () {
 
   /* 被点击照片在视口中的位置（FLIP 的起点 / 终点） */
   function pinRect(id) {
-    var pin = document.querySelector('.pin[data-id="' + id + '"]');
+    var pins = document.querySelectorAll('.pin[data-id="' + id + '"]');
+    var pin = null;
+    for (var k = 0; k < pins.length; k++) {
+      if (pins[k].offsetParent !== null) { pin = pins[k]; break; }
+    }
     if (!pin) return null;
     var photo = pin.querySelector(".photo") || pin;
     return photo.getBoundingClientRect();
+  }
+
+  function navEntries() {
+    return (DR.state.mode === "spatial" && DR.navList) ? DR.navList : DR.filtered();
   }
 
   /* 填充某条目的图片与信息，并更新 ← → 可用状态 */
@@ -105,7 +113,7 @@ DR.detail = (function () {
     setField("description", e.description);
 
     /* 上一条 / 下一条（基于当前筛选结果的顺序） */
-    var l = DR.filtered();
+    var l = navEntries();
     var i = -1;
     for (var k = 0; k < l.length; k++) if (l[k].id === id) { i = k; break; }
     prevBtn.disabled = i <= 0;
@@ -178,7 +186,7 @@ DR.detail = (function () {
   /* 上一条 / 下一条：卡片保持原位，内容平滑更新 */
   function nav(dir) {
     if (overlay.hidden) return;
-    var l = DR.filtered();
+    var l = navEntries();
     var i = -1;
     for (var k = 0; k < l.length; k++) if (l[k].id === currentId) { i = k; break; }
     var n = i + dir;

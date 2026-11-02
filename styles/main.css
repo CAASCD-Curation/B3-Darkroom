@@ -1205,3 +1205,216 @@ body.mode-organize #safelightBtn { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .opin { transition: none; }
 }
+
+/* ============================================================
+   MODE 03：SPATIAL / 空间导航（独立黑白建筑制图系统）
+   ============================================================ */
+body.mode-spatial { background: #FFFFFF; color: #111111; }
+body.mode-spatial #layout,
+body.mode-spatial #organize,
+body.mode-spatial #safelightBtn { display: none; }
+body.mode-spatial #topbar { background: #FFFFFF; color: #111111; border-bottom-color: #111111; }
+body.mode-spatial .brand .en,
+body.mode-spatial .counter b { color: #111111; }
+body.mode-spatial .brand .sub,
+body.mode-spatial .counter,
+body.mode-spatial .mode-switch button,
+body.mode-spatial .mode-switch .sep { color: #777777; }
+body.mode-spatial .mode-switch button:hover,
+body.mode-spatial .mode-switch button.active { color: #111111; }
+body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
+
+#spatial { min-height: calc(100vh - var(--topbar-h, 62px)); background: #FFFFFF; color: #111111; }
+#spatial[hidden] { display: none; }
+#spatialRoot { min-height: inherit; }
+#spatial button { border-radius: 0; }
+.spatial-kicker {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.17em;
+  line-height: 1.6;
+  color: #777777;
+  text-transform: uppercase;
+}
+
+/* 第一层：轴测总地图 */
+.spatial-overview { max-width: 1500px; margin: 0 auto; padding: 34px 34px 54px; }
+.spatial-overview-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+.spatial-overview-head h2 {
+  margin-top: 12px;
+  font-family: var(--font-condensed);
+  font-size: clamp(28px, 3.2vw, 52px);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.04;
+}
+.spatial-intro { max-width: 350px; font-size: 12px; line-height: 1.9; color: #666666; }
+.spatial-overview-map { max-width: 1280px; margin: 8px auto 0; }
+.spatial-building-index { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #111111; border-left: 1px solid #111111; }
+.spatial-building-card {
+  min-width: 0;
+  min-height: 142px;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 8px 12px;
+  padding: 18px;
+  text-align: left;
+  color: #111111;
+  background: #FFFFFF;
+  border-right: 1px solid #111111 !important;
+  border-bottom: 1px solid #111111 !important;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+.spatial-building-card:hover { background: #111111; color: #FFFFFF; }
+.spatial-building-no { grid-row: 1 / 4; font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; }
+.spatial-building-name { font-size: 18px; font-weight: 500; letter-spacing: 0.06em; }
+.spatial-building-name small { display: block; margin-top: 4px; font-family: var(--mono); font-size: 8px; font-weight: 400; letter-spacing: 0.15em; opacity: 0.65; }
+.spatial-building-sub { font-size: 11px; line-height: 1.6; color: #777777; }
+.spatial-building-card:hover .spatial-building-sub { color: #CCCCCC; }
+.spatial-building-count { font-family: var(--mono); font-size: 8px; letter-spacing: 0.11em; }
+
+/* 图纸与 SVG 热区：所有坐标都随原始图片等比缩放 */
+.spatial-drawing { position: relative; width: 100%; }
+.spatial-lines { position: absolute; inset: 0; display: block; width: 100%; height: 100%; user-select: none; }
+.spatial-invert { filter: invert(1); }
+.spatial-hotzones { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.spatial-hotspot {
+  fill: rgba(0, 0, 0, 0);
+  stroke: rgba(0, 0, 0, 0);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  outline: none;
+  transition: fill 0.14s ease, stroke 0.14s ease;
+}
+.spatial-hotspot:hover,
+.spatial-hotspot:focus-visible { fill: rgba(0, 0, 0, 0.12); stroke: #111111; }
+.spatial-hotspot.selected { fill: rgba(0, 0, 0, 0); stroke: rgba(0, 0, 0, 0); }
+.spatial-hotspot.selected:hover,
+.spatial-hotspot.selected:focus-visible { fill: rgba(255, 255, 255, 0.08); stroke: #FFFFFF; }
+
+/* 第二层：左 40% 剖面 / 右 60% 展品 */
+.spatial-building-layout { display: grid; grid-template-columns: 40% 60%; align-items: start; }
+.spatial-section-pane {
+  position: sticky;
+  top: var(--topbar-h, 62px);
+  height: calc(100vh - var(--topbar-h, 62px));
+  min-width: 0;
+  overflow-y: auto;
+  border-right: 1px solid #111111;
+  background: #FFFFFF;
+  scrollbar-width: thin;
+}
+.spatial-section-inner { padding: 18px 24px 26px; }
+.spatial-back {
+  display: block;
+  margin-bottom: 24px;
+  padding: 0 0 5px;
+  border-bottom: 1px solid #111111 !important;
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #555555;
+}
+.spatial-back:hover { color: #000000; }
+.spatial-section-head h2 { margin-top: 7px; font-size: 34px; font-weight: 500; letter-spacing: 0.08em; line-height: 1.2; }
+.spatial-subtitle { margin-top: 7px; font-size: 11px; line-height: 1.6; color: #666666; }
+.spatial-floor-nav { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; border-top: 1px solid #111111; border-left: 1px solid #111111; }
+.spatial-floor-nav button {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  border-right: 1px solid #111111 !important;
+  border-bottom: 1px solid #111111 !important;
+  color: #111111;
+  background: #FFFFFF;
+  font-size: 10px;
+  text-align: left;
+}
+.spatial-floor-nav button b { font-family: var(--mono); font-size: 8px; font-weight: 400; color: #777777; }
+.spatial-floor-nav button:hover,
+.spatial-floor-nav button.active { background: #111111; color: #FFFFFF; }
+.spatial-floor-nav button:hover b,
+.spatial-floor-nav button.active b { color: #FFFFFF; }
+.spatial-section-drawing { max-width: 590px; margin: 18px auto 0; }
+.spatial-drawing-note { margin-top: 10px; font-family: var(--mono); font-size: 7px; letter-spacing: 0.12em; color: #777777; text-align: center; }
+
+/* 右上角持续可见、持续可操作的迷你总地图 */
+.spatial-minimap {
+  position: fixed;
+  z-index: 12;
+  top: calc(var(--topbar-h, 62px) + 14px);
+  right: 20px;
+  width: min(300px, 25vw);
+  padding: 10px;
+  border: 1px solid #111111;
+  background: #FFFFFF;
+  color: #111111;
+}
+.spatial-mini-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; font-family: var(--mono); font-size: 7px; letter-spacing: 0.08em; color: #666666; }
+.spatial-mini-head button { padding: 3px 0; border-bottom: 1px solid #111111 !important; font-size: 7px; color: #111111; }
+.spatial-mini-current { padding-top: 7px; border-top: 1px solid #DDDDDD; font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em; }
+
+/* 第三层：现有随机照片瀑布流，照片改为黑白灰度 */
+.spatial-exhibits { min-width: 0; padding: 24px 24px 60px; }
+.spatial-exhibits-head {
+  min-height: 244px;
+  margin-right: min(320px, 27vw);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: start;
+  gap: 10px;
+  border-bottom: 1px solid #111111;
+  padding-bottom: 14px;
+}
+.spatial-exhibits-head h3 { margin-top: 8px; font-size: 22px; font-weight: 500; letter-spacing: 0.04em; }
+.spatial-exhibit-count { font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em; color: #666666; }
+.spatial-keywords { grid-column: 1 / -1; font-size: 10px; line-height: 1.8; color: #777777; }
+.spatial-wall { position: relative; width: 100%; min-height: 180px; }
+#spatial .pin .photo { background: #FFFFFF; border: 1px solid #111111; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15); }
+#spatial .imgwrap,
+#spatial .imgwrap.on { background: #FFFFFF; }
+#spatial .imgwrap img { mix-blend-mode: normal; filter: grayscale(1) contrast(1.08) brightness(0.98); }
+#spatial .pin:hover .photo { background: #FFFFFF; box-shadow: 0 7px 18px rgba(0, 0, 0, 0.22); }
+#spatial .pin:hover .imgwrap.on img { filter: grayscale(1) contrast(1.08) brightness(1.08); }
+#spatial .cap { color: #111111; }
+#spatial .cap .t { color: #666666; }
+#spatial .photo.pending .ph { background: #FFFFFF; color: #111111; }
+#spatial .wall-empty { padding: 42px 0; color: #666666; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; }
+
+@media (max-width: 1100px) {
+  .spatial-overview { padding: 26px 24px 44px; }
+  .spatial-section-inner { padding: 16px; }
+  .spatial-exhibits { padding: 20px 18px 50px; }
+  .spatial-minimap { right: 14px; width: 240px; }
+  .spatial-exhibits-head { margin-right: 255px; min-height: 205px; }
+  .spatial-building-card { grid-template-columns: 34px 1fr; padding: 14px; }
+}
+
+@media (max-width: 760px) {
+  .spatial-overview { padding: 24px 16px 40px; }
+  .spatial-overview-head { display: block; }
+  .spatial-intro { margin-top: 18px; }
+  .spatial-building-index { grid-template-columns: 1fr; }
+  .spatial-building-card { min-height: 120px; }
+  .spatial-building-layout { display: block; }
+  .spatial-section-pane { position: relative; top: auto; width: 100%; height: auto; max-height: none; overflow: visible; border-right: none; border-bottom: 1px solid #111111; }
+  .spatial-section-drawing { max-width: 520px; }
+  .spatial-exhibits { padding: 20px 16px 44px; }
+  .spatial-minimap { top: calc(var(--topbar-h, 62px) + 10px); right: 10px; width: 190px; }
+  .spatial-exhibits-head { min-height: 190px; margin-right: 200px; }
+  .spatial-exhibits-head h3 { font-size: 17px; }
+  .spatial-exhibit-count { display: none; }
+}
+
+@media (max-width: 520px) {
+  .spatial-exhibits-head { min-height: 0; margin-right: 0; padding-top: 176px; }
+  .spatial-minimap { width: 174px; }
+  .spatial-mini-head > span { display: none; }
+  .spatial-mini-head { justify-content: flex-end; }
+}
+
