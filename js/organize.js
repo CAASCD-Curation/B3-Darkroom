@@ -98,7 +98,7 @@ DR.organize = (function () {
       img.decoding = "async";
       img.draggable = false;
       img.src = encodeURI(e.images[0].src);
-      img.alt = e.id + " " + e.title;
+      img.alt = e.id + " " + (e.title || "待核对");
       img.addEventListener("load", function () { wrap.classList.add("on"); });
       if (img.complete && img.naturalWidth > 0) wrap.classList.add("on");
       wrap.appendChild(img);
@@ -121,7 +121,7 @@ DR.organize = (function () {
     cap.textContent = e.id;
     var t = document.createElement("span");
     t.className = "t";
-    t.textContent = e.title;
+    t.textContent = e.title || "待核对";
     cap.appendChild(t);
     photo.appendChild(cap);
     pin.appendChild(photo);
@@ -361,10 +361,14 @@ DR.organize = (function () {
       dd.textContent = value || "—";
       dd.classList.toggle("dim", !value);
     }
+    function setEntryField(name) {
+      var pending = (e.pendingFields || []).indexOf(name) >= 0;
+      setField(name, pending ? "待核对" : e[name]);
+    }
     setField("id", e.id);
-    setField("title", e.title);
-    setField("source", e.source);
-    setField("year", e.year);
+    setEntryField("title");
+    setEntryField("source");
+    setEntryField("year");
 
     /* TAGS：章节 → 小结构 → MEDIA / DARKROOM AS → # 自由标签 */
     var tagDD = dBody.querySelector('[data-f="tags"]');
@@ -383,8 +387,27 @@ DR.organize = (function () {
     if (e.media) addTag(catText(MEDIA_ZH, e.media), "tag cat");
     if (e.darkroomAs) addTag(catText(AS_ZH, e.darkroomAs), "tag cat");
     (e.tags || []).forEach(function (t) { addTag("#" + t); });
-    if (!tagCount) { tagDD.textContent = "—"; tagDD.classList.add("dim"); }
-    setField("description", e.description);
+    if (!tagCount) {
+      tagDD.textContent = (e.pendingFields || []).indexOf("chapterTag") >= 0 ? "待核对" : "—";
+      tagDD.classList.add("dim");
+    }
+    setEntryField("description");
+
+    var linkRow = dBody.querySelector('[data-row="link"]');
+    var linkDD = dBody.querySelector('[data-f="link"]');
+    linkRow.hidden = !e.link;
+    linkDD.textContent = "";
+    linkDD.classList.toggle("dim", !e.link);
+    if (e.link) {
+      var a = document.createElement("a");
+      a.textContent = e.link;
+      if (/^https?:\/\//i.test(e.link)) {
+        a.href = e.link;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      linkDD.appendChild(a);
+    }
   }
 
   /* ---------- STATE 03：放大片（圆形镜片，DOM 父级 = #orgArea，可在整个右侧照片墙内自由拖动） ---------- */

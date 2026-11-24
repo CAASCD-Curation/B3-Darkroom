@@ -61,16 +61,42 @@ DR.spatial = (function () {
     fitFrame = requestAnimationFrame(fitFixedDrawings);
   }
 
-  /* 同一份灰度线稿叠两层：选中多边形内的上层反色 = 黑底白线。 */
+  /* 同一份原始线稿叠加配色层；只改变填充与线条颜色，不修改图形、比例或热区。 */
+  function toneLayer(opts, item, tone) {
+    var inverted = tone === "black-white" || tone === "red-white";
+    return '<div class="spatial-tone spatial-tone-' + tone + '" style="clip-path:' +
+      clipPolygon(item.polygon, opts.viewBox) + '">' +
+      '<img class="spatial-lines' + (inverted ? " spatial-invert" : "") + '" src="' + esc(opts.src) +
+      '" alt="" aria-hidden="true" draggable="false"></div>';
+  }
+
   function drawing(opts) {
+    var selectedId = opts.selected && opts.selected.id;
     var html = '<div class="spatial-drawing ' + esc(opts.className || "") +
-      '" style="aspect-ratio:' + opts.viewBox[0] + "/" + opts.viewBox[1] + '">';
-    html += '<img class="spatial-lines" src="' + esc(opts.src) + '" alt="' + esc(opts.alt) + '" draggable="false">';
-    if (opts.selected) {
-      html += '<img class="spatial-lines spatial-invert" src="' + esc(opts.src) +
-        '" alt="" aria-hidden="true" draggable="false" style="clip-path:' +
-        clipPolygon(opts.selected.polygon, opts.viewBox) + '">';
+      '" data-selected="' + esc(selectedId || "") + '" style="aspect-ratio:' +
+      opts.viewBox[0] + "/" + opts.viewBox[1] + '">';
+    /* 模块普通状态：黑底白线。 */
+    html += '<img class="spatial-lines spatial-invert" src="' + esc(opts.src) +
+      '" alt="' + esc(opts.alt) + '" draggable="false">';
+
+    /* 剖面未选中楼层：红房子红底白线，白房子白底黑线；黑房子沿用黑色基层。 */
+    if (opts.kind === "floor" && opts.buildingId !== "B1") {
+      var ordinaryTone = opts.buildingId === "B2" ? "red-white" : "white-black";
+      opts.items.forEach(function (item) {
+        if (item.id !== selectedId) html += toneLayer(opts, item, ordinaryTone);
+      });
     }
+
+    if (opts.selected) {
+      var selectedTone;
+      if (opts.kind === "building") {
+        selectedTone = selectedId === "B2" ? "red-white" : selectedId === "B3" ? "white-black" : "black-white";
+      } else {
+        selectedTone = opts.buildingId === "B2" ? "white-red" : opts.buildingId === "B3" ? "black-white" : "white-black";
+      }
+      html += toneLayer(opts, opts.selected, selectedTone);
+    }
+
     html += '<svg class="spatial-hotzones" viewBox="0 0 ' + opts.viewBox.join(" ") +
       '" preserveAspectRatio="none" aria-label="' + esc(opts.alt) + '">';
     opts.items.forEach(function (item) {
@@ -117,7 +143,7 @@ DR.spatial = (function () {
     var total = model.map.buildings.reduce(function (n, b) { return n + buildingCount(b); }, 0);
     var html = '<div class="spatial-overview">' +
       '<header class="spatial-overview-head">' +
-      '<div><p class="spatial-kicker">SPATIAL NAVIGATION / 空间导航</p>' +
+      '<div><p class="spatial-kicker">场域图</p>' +
       '<h2>THREE BUILDINGS<br>EIGHT FLOORS</h2></div>' +
       '<p class="spatial-intro">从建筑进入策展结构。选择一栋建筑，查看剖面与楼层；选择楼层，浏览对应展品。</p>' +
       '</header>' +
@@ -170,7 +196,7 @@ DR.spatial = (function () {
       '</header>' + floorNav(b, f) +
       '<div class="spatial-section-drawing">' + drawing({
         src: b.section, viewBox: b.sectionViewBox, items: b.floors,
-        selected: f || null, kind: "floor", alt: b.name + "建筑剖面图",
+        selected: f || null, kind: "floor", buildingId: b.id, alt: b.name + "建筑剖面图",
         className: "spatial-section-lines"
       }) + '</div>' +
       '<p class="spatial-drawing-note">SELECT A FLOOR / 点击剖面楼层筛选展品</p>' +

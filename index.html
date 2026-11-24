@@ -52,27 +52,27 @@
       <span class="sub">VISUAL RESEARCH DATABASE · V2</span>
     </div>
     <div class="mode-switch" role="tablist" aria-label="观看模式切换">
-      <button id="modeWall" type="button" class="active" role="tab" aria-selected="true">PHOTO WALL</button>
+      <button id="modeWall" type="button" class="active" role="tab" aria-selected="true">显影墙</button>
       <span class="sep">/</span>
-      <button id="modeOrganize" type="button" role="tab" aria-selected="false">ORGANIZE</button>
+      <button id="modeOrganize" type="button" role="tab" aria-selected="false">工作台</button>
       <span class="sep">/</span>
-      <button id="modeSpatial" type="button" role="tab" aria-selected="false">SPATIAL</button>
+      <button id="modeSpatial" type="button" role="tab" aria-selected="false">场域图</button>
     </div>
     <div class="counter" id="counter">—</div>
-    <button id="safelightBtn" type="button" aria-pressed="false"><span class="dot">○</span> SAFELIGHT</button>
+    <button id="safelightBtn" type="button" aria-pressed="false"><span class="dot">○</span> 安全灯</button>
   </div>
 </header>
 
 <div id="layout">
   <!-- ============ 中央：IMAGE WALL（二分模式下 = DARKROOM / INDEX） ============ -->
-  <main id="wall" aria-label="照片墙"></main>
+  <main id="wall" aria-label="显影墙"></main>
 
   <!-- ============ 右侧：LIGHT / 原彩显影区（SAFELIGHT 打开后出现） ============ -->
   <section id="light" aria-label="LIGHT 原彩内容">
     <header class="light-head">
-      <span class="light-title">ENLARGER<span class="zh">放大机</span></span>
+      <span class="light-title">放大片</span>
       <label class="dev">
-        <input id="devSlider" type="range" min="10" max="100" step="1" value="50" aria-label="Enlarger 放大机 显影程度">
+        <input id="devSlider" type="range" min="10" max="100" step="1" value="50" aria-label="放大片 显影程度">
         <span class="dev-val" id="devVal">50%</span>
       </label>
     </header>
@@ -81,7 +81,7 @@
 </div>
 
 <!-- ============ MODE 02：TAG / ORGANIZE（标签筛选 + 自由排列 + 放大镜） ============ -->
-<section id="organize" aria-label="TAG / ORGANIZE 观看模式" hidden>
+<section id="organize" aria-label="工作台观看模式" hidden>
 
   <!-- 左：DETAILS 当前选中词条内容 -->
   <aside class="org-details" aria-label="当前词条内容">
@@ -95,6 +95,7 @@
         <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
         <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
         <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
+        <div data-row="link" hidden><dt>LINK / 链接</dt><dd data-f="link"></dd></div>
       </dl>
     </div>
   </aside>
@@ -115,7 +116,7 @@
 </section>
 
 <!-- ============ MODE 03：SPATIAL（建筑 → 楼层 → 展品） ============ -->
-<section id="spatial" aria-label="SPATIAL 空间导航" hidden>
+<section id="spatial" aria-label="场域图" hidden>
   <div id="spatialRoot"></div>
 </section>
 
@@ -142,6 +143,7 @@
           <div><dt>YEAR / 年代</dt><dd data-f="year"></dd></div>
           <div><dt>TAGS / 标签</dt><dd data-f="tags"></dd></div>
           <div><dt>DESCRIPTION / 备注</dt><dd data-f="description"></dd></div>
+        <div data-row="link" hidden><dt>LINK / 链接</dt><dd data-f="link"></dd></div>
         </dl>
       </aside>
     </div>

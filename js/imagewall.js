@@ -66,7 +66,7 @@ DR.wall = (function () {
     cap.textContent = e.id;
     var t = document.createElement("span");
     t.className = "t";
-    t.textContent = e.title;
+    t.textContent = e.title || "待核对";
     cap.appendChild(t);
     photo.appendChild(cap);
 

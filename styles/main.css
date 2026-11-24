@@ -666,7 +666,8 @@ body.split #light {
 }
 .detail-info dd { font-family: var(--font-detail); font-size: 13px; line-height: 1.7; color: var(--ink); word-break: break-word; }
 .detail-info dd.dim { color: var(--ink-dim); }
-.detail-info a { color: var(--ink); text-underline-offset: 3px; }
+.detail-info a { color: var(--ink); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.org-d-body a { color: inherit; text-underline-offset: 3px; overflow-wrap: anywhere; }
 
 .detail-info .tag { font-size: 11px; color: var(--ink-dim); margin-right: 10px; white-space: nowrap; }
 .detail-info .tag.cat { color: var(--ink); }
@@ -1471,5 +1472,147 @@ body.mode-spatial .mode-switch button.active { border-bottom-color: #111111; }
   .spatial-floor-nav { margin-top: 10px; }
   .spatial-floor-nav button { padding: 6px 8px; }
   .spatial-section-drawing { margin-top: 8px; }
+}
+
+/* ============================================================
+   场域图色彩系统：黑底白线；建筑识别色与楼层反转色独立于此。
+   仅覆盖颜色，不改变上方既有布局、尺寸、比例与交互样式。
+   ============================================================ */
+body.mode-spatial { background: var(--bg); color: #FFFFFF; }
+body.mode-spatial #topbar { background: var(--bg); color: #FFFFFF; border-bottom-color: #FFFFFF; }
+body.mode-spatial .brand .en { color: var(--red); }
+body.mode-spatial .counter b { color: #FFFFFF; }
+body.mode-spatial .brand .sub,
+body.mode-spatial .counter,
+body.mode-spatial .mode-switch button,
+body.mode-spatial .mode-switch .sep { color: #777777; }
+body.mode-spatial .mode-switch button:hover,
+body.mode-spatial .mode-switch button.active { color: #FFFFFF; }
+body.mode-spatial .mode-switch button.active { border-bottom-color: #FFFFFF; }
+
+#spatial { background: var(--bg); color: #FFFFFF; }
+.spatial-kicker,
+.spatial-intro,
+.spatial-building-sub,
+.spatial-subtitle,
+.spatial-exhibit-count,
+.spatial-keywords,
+.spatial-drawing-note,
+.spatial-wall-empty { color: #777777; }
+
+.spatial-building-index { border-top-color: #FFFFFF; border-left-color: #FFFFFF; }
+.spatial-building-card {
+  color: #FFFFFF;
+  background: var(--bg);
+  border-right-color: #FFFFFF !important;
+  border-bottom-color: #FFFFFF !important;
+}
+.spatial-building-card:hover { background: #FFFFFF; color: var(--bg); }
+.spatial-building-card:hover .spatial-building-sub { color: #777777; }
+
+/* 原始白底黑线图片反色为黑底白线；局部叠加层使用原有黑、白、红。 */
+.spatial-tone {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  isolation: isolate;
+}
+.spatial-drawing { background: var(--bg); isolation: isolate; }
+.spatial-drawing > .spatial-lines.spatial-invert { mix-blend-mode: lighten; }
+.spatial-tone-black-white { background: var(--bg); }
+.spatial-tone-red-white,
+.spatial-tone-white-red { background: var(--red); }
+.spatial-tone-white-black { background: #FFFFFF; }
+.spatial-tone-black-white .spatial-lines,
+.spatial-tone-red-white .spatial-lines,
+.spatial-tone-white-red .spatial-lines { mix-blend-mode: lighten; }
+
+.spatial-hotspot:hover,
+.spatial-hotspot:focus-visible { fill: rgba(255, 255, 255, 0.12); stroke: #FFFFFF; }
+.spatial-hotspot.selected { fill: rgba(0, 0, 0, 0); stroke: rgba(0, 0, 0, 0); }
+.spatial-hotspot.selected:hover,
+.spatial-hotspot.selected:focus-visible { fill: rgba(255, 255, 255, 0.12); stroke: #FFFFFF; }
+.spatial-drawing[data-selected="B3"] .spatial-hotspot.selected:hover,
+.spatial-drawing[data-selected="B3"] .spatial-hotspot.selected:focus-visible,
+#spatial[data-building="B1"] .spatial-hotspot.selected:hover,
+#spatial[data-building="B1"] .spatial-hotspot.selected:focus-visible,
+#spatial[data-building="B3"] .spatial-hotspot:hover,
+#spatial[data-building="B3"] .spatial-hotspot:focus-visible {
+  fill: rgba(16, 16, 14, 0.12);
+  stroke: var(--bg);
+}
+#spatial[data-building="B3"] .spatial-hotspot.selected:hover,
+#spatial[data-building="B3"] .spatial-hotspot.selected:focus-visible {
+  fill: rgba(255, 255, 255, 0.12);
+  stroke: #FFFFFF;
+}
+#spatial[data-building="B2"] .spatial-hotspot.selected:hover,
+#spatial[data-building="B2"] .spatial-hotspot.selected:focus-visible {
+  fill: rgba(228, 13, 20, 0.12);
+  stroke: var(--red);
+}
+
+.spatial-section-pane { background: var(--bg); border-right-color: #FFFFFF; }
+.spatial-back { color: #777777; border-bottom-color: #FFFFFF !important; }
+.spatial-back:hover { color: #FFFFFF; }
+.spatial-floor-nav { border-top-color: #FFFFFF; border-left-color: #FFFFFF; }
+.spatial-floor-nav button {
+  color: #FFFFFF;
+  background: var(--bg);
+  border-right-color: #FFFFFF !important;
+  border-bottom-color: #FFFFFF !important;
+}
+.spatial-floor-nav button b { color: #777777; }
+.spatial-floor-nav button:hover,
+.spatial-floor-nav button.active { background: #FFFFFF; color: var(--bg); }
+.spatial-floor-nav button:hover b,
+.spatial-floor-nav button.active b { color: var(--bg); }
+
+/* 红房子：未选中红底白线，选中白底红线。 */
+#spatial[data-building="B2"] .spatial-floor-nav button { background: var(--red); color: #FFFFFF; }
+#spatial[data-building="B2"] .spatial-floor-nav button b { color: #FFFFFF; }
+#spatial[data-building="B2"] .spatial-floor-nav button:hover,
+#spatial[data-building="B2"] .spatial-floor-nav button.active {
+  background: #FFFFFF;
+  color: var(--red);
+  border-color: var(--red) !important;
+}
+#spatial[data-building="B2"] .spatial-floor-nav button:hover b,
+#spatial[data-building="B2"] .spatial-floor-nav button.active b { color: var(--red); }
+
+/* 白房子：未选中白底黑线，选中黑底白线。 */
+#spatial[data-building="B3"] .spatial-floor-nav { border-top-color: var(--bg); border-left-color: var(--bg); }
+#spatial[data-building="B3"] .spatial-floor-nav button {
+  background: #FFFFFF;
+  color: var(--bg);
+  border-right-color: var(--bg) !important;
+  border-bottom-color: var(--bg) !important;
+}
+#spatial[data-building="B3"] .spatial-floor-nav button b { color: #777777; }
+#spatial[data-building="B3"] .spatial-floor-nav button:hover,
+#spatial[data-building="B3"] .spatial-floor-nav button.active {
+  background: var(--bg);
+  color: #FFFFFF;
+  border-color: #FFFFFF !important;
+}
+#spatial[data-building="B3"] .spatial-floor-nav button:hover b,
+#spatial[data-building="B3"] .spatial-floor-nav button.active b { color: #FFFFFF; }
+
+.spatial-minimap { background: var(--bg); color: #FFFFFF; border-color: #FFFFFF; }
+.spatial-mini-head { color: #777777; }
+.spatial-mini-head button { color: #FFFFFF; border-bottom-color: #FFFFFF !important; }
+.spatial-mini-current { border-top-color: #777777; }
+.spatial-exhibits-head { border-bottom-color: #FFFFFF; }
+
+#spatial .pin .photo { background: var(--bg); border-color: #FFFFFF; }
+#spatial .imgwrap,
+#spatial .imgwrap.on { background: var(--bg); }
+#spatial .pin:hover .photo { background: var(--bg); }
+#spatial .cap { color: #FFFFFF; }
+#spatial .cap .t { color: #777777; }
+#spatial .photo.pending .ph { background: var(--bg); color: #FFFFFF; }
+
+@media (max-width: 760px) {
+  .spatial-section-pane { border-bottom-color: #FFFFFF; }
 }
 

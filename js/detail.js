@@ -48,7 +48,7 @@ DR.detail = (function () {
       duo.style.display = "";
       duo.src = encodeURI(e.images[0].src);
       color.src = encodeURI(e.images[0].src);
-      duo.alt = color.alt = e.id + " " + e.title;
+      duo.alt = color.alt = e.id + " " + (e.title || "待核对");
       e.images.slice(1).forEach(function (img) {
         var im = document.createElement("img");
         im.src = encodeURI(img.src);
@@ -61,11 +61,15 @@ DR.detail = (function () {
       color.alt = e.id + "（图片待补充）";
     }
 
-    /* 信息字段 */
+    /* 信息字段：源表空缺只标记待核对，不补写。F 类无出处列，保持 —。 */
+    function setEntryField(name) {
+      var pending = (e.pendingFields || []).indexOf(name) >= 0;
+      setField(name, pending ? "待核对" : e[name]);
+    }
     setField("id", e.id);
-    setField("title", e.title);
-    setField("source", e.source);
-    setField("year", e.year);
+    setEntryField("title");
+    setEntryField("source");
+    setEntryField("year");
 
     /* TAGS：分类标签（MEDIA / DARKROOM AS）在前，# 标签在后 */
     var tagDD = overlay.querySelector('[data-f="tags"]');
@@ -107,10 +111,27 @@ DR.detail = (function () {
       });
     }
     if (!tagCount) {
-      tagDD.textContent = "—";
+      var chapterPending = (e.pendingFields || []).indexOf("chapterTag") >= 0;
+      tagDD.textContent = chapterPending ? "待核对" : "—";
       tagDD.classList.add("dim");
     }
-    setField("description", e.description);
+    setEntryField("description");
+
+    var linkRow = overlay.querySelector('[data-row="link"]');
+    var linkDD = overlay.querySelector('[data-f="link"]');
+    linkRow.hidden = !e.link;
+    linkDD.textContent = "";
+    linkDD.classList.toggle("dim", !e.link);
+    if (e.link) {
+      var a = document.createElement("a");
+      a.textContent = e.link;
+      if (/^https?:\/\//i.test(e.link)) {
+        a.href = e.link;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      linkDD.appendChild(a);
+    }
 
     /* 上一条 / 下一条（基于当前筛选结果的顺序） */
     var l = navEntries();

@@ -82,7 +82,7 @@ DR.split = (function () {
       img.loading = "lazy";
       img.decoding = "async";
       img.src = encodeURI(e.images[0].src);
-      img.alt = e.id + " " + e.title;
+      img.alt = e.id + " " + (e.title || "待核对");
       frame.appendChild(img);
     } else {
       var ph = document.createElement("div");
@@ -102,21 +102,26 @@ DR.split = (function () {
 
     var titleEl = document.createElement("div");
     titleEl.className = "l-title";
-    titleEl.textContent = e.title || "—";
+    titleEl.textContent = e.title || "待核对";
     cap.appendChild(titleEl);
 
+    function field(name) {
+      return (e.pendingFields || []).indexOf(name) >= 0 ? "待核对" : e[name];
+    }
     var meta = document.createElement("div");
     meta.className = "l-meta";
-    meta.appendChild(metaLine("SOURCE / 出处", e.source));
-    meta.appendChild(metaLine("YEAR / 年代", e.year));
+    meta.appendChild(metaLine("SOURCE / 出处", field("source")));
+    meta.appendChild(metaLine("YEAR / 年代", field("year")));
     var tags = [];
     if (e.exChapterInfo) tags.push(e.exChapterInfo.no + " · " + e.exChapterInfo.zh);
     if (e.exSubInfo) tags.push(e.exSubInfo.no + "｜" + e.exSubInfo.zh);
     if (e.media) tags.push(e.media + " · " + (MEDIA_ZH[e.media] || ""));
     if (e.darkroomAs) tags.push(e.darkroomAs + " · " + (AS_ZH[e.darkroomAs] || ""));
     (e.tags || []).forEach(function (t) { tags.push("#" + t); });
-    meta.appendChild(metaLine("TAGS / 标签", tags.join("　") || "—"));
-    meta.appendChild(metaLine("DESCRIPTION / 备注", e.description));
+    var tagText = tags.join("　") || ((e.pendingFields || []).indexOf("chapterTag") >= 0 ? "待核对" : "—");
+    meta.appendChild(metaLine("TAGS / 标签", tagText));
+    meta.appendChild(metaLine("DESCRIPTION / 备注", field("description")));
+    if (e.link) meta.appendChild(metaLine("LINK / 链接", e.link));
     cap.appendChild(meta);
 
     fig.appendChild(cap);
